@@ -33,10 +33,10 @@ DE-MiniProject-TMDB/
 ├── data/                                            # Quản lý dữ liệu nguồn
 │   └── raw/                                         # [Git Ignore] File tmdb_5000_movies.csv & credits.csv tại máy cá nhân
 │
-├── postgres/                                        # [Người 1 - Khoa] DDL SQL khởi tạo các Schema
+├── postgres/                                        # [Khoa] DDL SQL khởi tạo các Schema
 │   └── init/                                        # File 01_init.sql tạo schema stage, dds, control
 │
-├── mage_pipeline/                                   # [Người 1 - Khoa & Người 4 - Vân] Pipeline Ingestion & Orchestration
+├── mage_pipeline/                                   # [Khoa & Vân] Pipeline Ingestion & Orchestration
 │   ├── pipelines/                                   # Flow điều phối công việc
 │   ├── data_loaders/                                # Block đọc file CSV nguồn
 │   ├── transformers/                                # Block lọc dữ liệu incremental & chuẩn hóa
@@ -45,13 +45,13 @@ DE-MiniProject-TMDB/
 ├── dbt_transform/                                   # [Tuấn, Thịnh, Vân] Transformation & Data Quality Tests
 │   ├── dbt_project.yml
 │   ├── packages.yml
-│   ├── seeds/                                       # [Người 3 - Thịnh] Seed file ánh xạ ThemeGroup cho Keyword
+│   ├── seeds/                                       # [Thịnh] Seed file ánh xạ ThemeGroup cho Keyword
 │   ├── models/
-│   │   ├── staging/                                 # [Người 2 - Tuấn] Staging views đổi 0 thành NULL & làm sạch
-│   │   ├── dimensions/                              # [Người 2 - Tuấn] DimDate, DimMovie, DimLanguage
-│   │   ├── bridge/                                  # [Người 3 - Thịnh] DimGenre, DimCompany, DimCountry, DimKeyword & 4 Bridge tables
-│   │   └── facts/                                   # [Người 4 - Vân] FactMovie & các chỉ số đo lường
-│   └── tests/                                       # [Người 4 - Vân] Bộ kiểm thử chất lượng dữ liệu (dbt tests)
+│   │   ├── staging/                                 # [Tuấn] Staging views đổi 0 thành NULL & làm sạch
+│   │   ├── dimensions/                              # [Tuấn] DimDate, DimMovie, DimLanguage
+│   │   ├── bridge/                                  # [Thịnh] DimGenre, DimCompany, DimCountry, DimKeyword & 4 Bridge tables
+│   │   └── facts/                                   # [Vân] FactMovie & các chỉ số đo lường
+│   └── tests/                                       # [Vân] Bộ kiểm thử chất lượng dữ liệu (dbt tests)
 │
 ├── powerbi_dashboard/                               # [Cả nhóm] File Power BI Project (.pbip/.pbix) & công thức DAX
 └── docs/                                            # Tài liệu sơ đồ thiết kế, kiểm thử và báo cáo đồ án
@@ -67,10 +67,10 @@ DE-MiniProject-TMDB/
 
 | Thành viên | Vai trò chính | Nhánh làm việc (`Feature Branch`) | Thư mục phụ trách chính | Người Review & Chạy thử chéo |
 | :--- | :--- | :--- | :--- | :--- |
-| **Người 1 (Khoa)** | **Data Ingestion & Staging** (Source CSV → Postgres Stage; Mage Pipeline & Control Logs) | `feat/ingestion-khoa` | `mage_pipeline/`, `postgres/init/`, `docs/reports/` | **Tuấn** |
-| **Người 2 (Tuấn)** | **Single-value Dimensions** (Staging → DimDate, DimMovie, DimLanguage; Ép kiểu & Surrogate Key) | `feat/dim-tuan` | `dbt_transform/models/staging/`, `dbt_transform/models/dimensions/` | **Thịnh** |
-| **Người 3 (Thịnh)** | **JSON Parsing & Bridge Tables** (Bóc tách chuỗi JSON → Dim & Bridge Genre, Company, Country, Keyword) | `feat/bridge-thinh` | `dbt_transform/models/bridge/`, `dbt_transform/seeds/` | **Vân** |
-| **Người 4 (Vân)** | **Fact, Testing, BI & AI** (Xây dựng `FactMovie`, dbt tests, Power BI Dashboard, tích hợp GenAI & Báo cáo) | `feat/fact-van` | `dbt_transform/models/facts/`, `dbt_transform/tests/`, `powerbi_dashboard/`, `docs/` | **Khoa** |
+| **Khoa** | **Data Ingestion & Staging** (Source CSV → Postgres Stage; Mage Pipeline & Control Logs) | `feat/ingestion-khoa` | `mage_pipeline/`, `postgres/init/`, `docs/reports/` | **Tuấn** |
+| **Tuấn** | **Single-value Dimensions** (Staging → DimDate, DimMovie, DimLanguage; Ép kiểu & Surrogate Key) | `feat/dim-tuan` | `dbt_transform/models/staging/`, `dbt_transform/models/dimensions/` | **Thịnh** |
+| **Thịnh** | **JSON Parsing & Bridge Tables** (Bóc tách chuỗi JSON → Dim & Bridge Genre, Company, Country, Keyword) | `feat/bridge-thinh` | `dbt_transform/models/bridge/`, `dbt_transform/seeds/` | **Vân** |
+| **Vân** | **Fact, Testing, BI & AI** (Xây dựng `FactMovie`, dbt tests, Power BI Dashboard, tích hợp GenAI & Báo cáo) | `feat/fact-van` | `dbt_transform/models/facts/`, `dbt_transform/tests/`, `powerbi_dashboard/`, `docs/` | **Khoa** |
 
 ---
 
@@ -187,19 +187,19 @@ Toàn bộ thành viên thống nhất cấu trúc commit như sau để lịch 
 * **`report`**: Phần tổng hợp báo cáo đồ án PDF (Cả nhóm).
 
 ### Ví dụ Commit chuẩn cho từng thành viên
-* **Người 1 (Khoa)**:
+* **Khoa**:
   * `feat(staging): create postgres init DDL for stage, dds, control schemas`
   * `feat(mage): build csv data loader and postgres exporter blocks`
   * `docs(report): add data ingestion architecture section`
-* **Người 2 (Tuấn)**:
+* **Tuấn**:
   * `feat(dim): build stg_tmdb_movies model converting 0 budget to null`
   * `feat(dim): implement dim_date and dim_language models with surrogate keys`
   * `fix(dim): handle missing release_date with unknown surrogate key -1`
-* **Người 3 (Thịnh)**:
+* **Thịnh**:
   * `feat(bridge): parse json string for genres and create bridge_movie_genre`
   * `feat(bridge): calculate weight_factor for multi-valued dimensions`
   * `feat(bridge): add seed file mapping keywords to theme_groups`
-* **Người 4 (Vân)**:
+* **Vân**:
   * `feat(fact): construct fact_movie model with profit and roi measures`
   * `test(fact): add primary key and foreign key relationship dbt tests`
   * `feat(pbi): design overview dashboard page with descriptive analytics`
