@@ -1,0 +1,3 @@
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "tmdb_ingestion"}, "timestamp": 1792554278, "user": 1}
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "fanciful_hill"}, "timestamp": 1792564024, "user": 1}
+{"operation": "create", "resource": {"type": "pipeline", "uuid": "dramatic_familiar"}, "timestamp": 1792564060, "user": 1}
