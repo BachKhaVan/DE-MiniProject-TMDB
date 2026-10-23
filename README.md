@@ -81,6 +81,7 @@ DE-MiniProject-TMDB/
    ```bash
    cp .env.example .env
    ```
+   Thay `change-me-before-running` trong `.env` bằng mật khẩu riêng trên máy của bạn.
 2. Tải tệp `tmdb_5000_movies.csv` và `tmdb_5000_credits.csv` từ Kaggle đặt vào thư mục `data/raw/` (thư mục này đã bị `.gitignore` chặn nên không lo push nhầm lên Git).
 
 ### Bước 2: Khởi động PostgreSQL và Mage.ai bằng Docker

@@ -1,10 +1,22 @@
-# Bỏ qua cấu hình & dữ liệu thô
+# Local credentials and tool configuration
 .env
 profiles.yml
 io_config.yaml
+
+# dbt build artifacts
 target/
 dbt_packages/
 logs/
-data/
-*.csv
-*.parquet
+
+# Source datasets and local pipeline state
+/data/raw/
+/mage_data/
+/mage_pipeline/.file_versions/
+/mage_pipeline/**/__pycache__/
+*.py[cod]
+
+# Local databases and logs
+*.db
+*.sqlite
+*.sqlite3
+*.log

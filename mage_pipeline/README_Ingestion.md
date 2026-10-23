@@ -22,15 +22,15 @@ Dữ liệu thô từ 2 file CSV (Kaggle) đã được xử lý qua pipeline, l
 
 ## 2. Cấu Hình Kết Nối Cơ Sở Dữ Liệu (Database Connection)
 
-Team dbt và các Agent AI vui lòng sử dụng thông tin kết nối dưới đây để thiết lập file `profiles.yml` hoặc truy cập qua DBeaver/pgAdmin. 
+Team dbt vui lòng dùng thông tin kết nối dưới đây để thiết lập file `profiles.yml`, `io_config.yaml` hoặc truy cập qua DBeaver/pgAdmin.
 
-*(Lưu ý: Thông tin bảo mật đã được chuẩn hóa cho dự án TMDB, vui lòng cấu hình qua file `.env`)*
+*(Mật khẩu được cấu hình riêng trong `.env`; không ghi mật khẩu thật vào tài liệu hoặc commit file `.env`.)*
 
 *   **Host:** `localhost` *(Từ máy host)* HOẶC `postgres` *(Nếu gọi nội bộ trong mạng Docker)*
 *   **Port:** `5432`
-*   **Database:** `tmdb_warehouse`
-*   **User:** `tmdb_admin`
-*   **Password:** `Tmdb_Admin_2026!`
+*   **Database:** Giá trị `POSTGRES_DB` trong `.env` (mặc định: `warehouse`)
+*   **User:** Giá trị `POSTGRES_USER` trong `.env` (mặc định: `labuser`)
+*   **Password:** Giá trị `POSTGRES_PASSWORD` trong `.env`
 
 **Truy vấn kiểm tra nhanh (Sample Query cho AI/Agent):**
 ```sql
@@ -73,7 +73,7 @@ Dành cho các thành viên khác khi clone code về máy cá nhân:
 
 **Bước 1: Chuẩn bị dữ liệu và Môi trường**
 *   Copy 2 file `tmdb_5000_movies.csv` và `tmdb_5000_credits.csv` vào thư mục `data/raw/`.
-*   Tạo file `.env` tại thư mục gốc và khai báo thông tin Database như ở **Mục 2**.
+*   Tạo `.env` từ `.env.example`, đổi mật khẩu mẫu, rồi dùng cùng thông tin đó trong `io_config.yaml` và `profiles.yml` cục bộ.
 
 **Bước 2: Khởi động hệ thống**
 Khởi chạy Docker Container chứa Mage.ai và PostgreSQL:
