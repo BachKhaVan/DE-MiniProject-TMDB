@@ -86,5 +86,18 @@ docker compose up -d
 2.  Mở pipeline `tmdb_ingestion` và nhấn **Run pipeline now** (Hoặc Play từng khối lệnh).
 3.  Kiểm tra thanh log hiển thị báo cáo số dòng đã được xử lý và nạp thành công.
 
+## 3. Hướng dẫn chạy mô phỏng Incremental Load (Chỉ dùng khi quay Demo)
+
+Luồng `tmdb_incremental` được thiết kế để giải quyết tiêu chí "Mô phỏng nạp dữ liệu tăng dần" của Đề bài 3.1. Luồng này sử dụng cơ chế Watermark (LSET/CET) để chỉ nạp những bộ phim mới phát hành.
+
+**Lưu ý quan trọng cho nhóm dbt:** KHÔNG CẦN chạy luồng này khi phát triển dbt để tránh làm rác dữ liệu thực tế. Nếu đã lỡ chạy, vui lòng chạy lại luồng Full Load (`tmdb_ingestion`) để reset kho dữ liệu về mốc 4.803 dòng.
+
+**Cách test luồng Incremental:**
+1. Tạo một file tên là `tmdb_new_batch.csv` trong thư mục `data/raw/` trên máy cá nhân.
+2. Dán đoạn dữ liệu giả lập (2 bộ phim mới) sau đây vào file và lưu lại:
+   ```csv
+   budget,genres,homepage,id,keywords,original_language,original_title,overview,popularity,production_companies,production_countries,release_date,revenue,runtime,spoken_languages,status,tagline,title,vote_average,vote_count
+   100000000,"[{""id"": 28, ""name"": ""Action""}]",,999991,,"en","New Movie 1","Overview 1",50.0,"[]","[]",2026-10-21,500000000,120,"[]","Released",,"New Movie 1",8.5,100
+   100000000,"[{""id"": 28, ""name"": ""Action""}]",,999992,,"en","New Movie 2","Overview 2",50.0,"[]","[]",2026-10-21,500000000,120,"[]","Released",,"New Movie 2",8.5,100
 ---
 *Báo cáo được tự động hóa chuẩn bị cho bước Data Transformation bằng dbt.*
