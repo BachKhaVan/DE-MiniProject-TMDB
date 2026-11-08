@@ -19,24 +19,37 @@ known_dates as (
     select
         to_char(full_date, 'YYYYMMDD')::integer as date_sk,
         full_date,
-        extract(day from full_date)::smallint as day,
-        extract(month from full_date)::smallint as month,
-        to_char(full_date, 'FMMonth') as month_name,
-        extract(quarter from full_date)::smallint as quarter,
+        extract(day from full_date)::integer as day,
+        extract(month from full_date)::integer as month,
+        case extract(month from full_date)::integer
+            when 1 then 'January'
+            when 2 then 'February'
+            when 3 then 'March'
+            when 4 then 'April'
+            when 5 then 'May'
+            when 6 then 'June'
+            when 7 then 'July'
+            when 8 then 'August'
+            when 9 then 'September'
+            when 10 then 'October'
+            when 11 then 'November'
+            when 12 then 'December'
+        end::varchar(20) as month_name,
+        extract(quarter from full_date)::integer as quarter,
         extract(year from full_date)::integer as year,
-        (floor(extract(year from full_date) / 10) * 10)::integer as decade
+        (to_char((floor(extract(year from full_date) / 10) * 10)::integer, 'FM9999') || 's')::varchar(10) as decade
     from calendar
 )
 
 select
     -1::integer as date_sk,
     null::date as full_date,
-    null::smallint as day,
-    null::smallint as month,
-    'Unknown'::text as month_name,
-    null::smallint as quarter,
+    null::integer as day,
+    null::integer as month,
+    'Unknown'::varchar(20) as month_name,
+    null::integer as quarter,
     null::integer as year,
-    null::integer as decade
+    'Unknown'::varchar(10) as decade
 
 union all
 

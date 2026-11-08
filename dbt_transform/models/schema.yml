@@ -23,63 +23,237 @@ models:
                 field: movie_nk
 
   - name: dim_date
-    description: Calendar dimension generated across observed release dates, with -1 for unknown dates.
+    description: Calendar dimension. date_sk -1 is the required unknown row.
+    config:
+      contract:
+        enforced: true
+    constraints:
+      - type: primary_key
+        columns: [date_sk]
     columns:
       - name: date_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests: [not_null, unique]
+      - name: full_date
+        data_type: date
+      - name: day
+        data_type: integer
+      - name: month
+        data_type: integer
+      - name: month_name
+        data_type: varchar(20)
+      - name: quarter
+        data_type: integer
+      - name: year
+        data_type: integer
+      - name: decade
+        data_type: varchar(10)
 
   - name: dim_movie
-    description: Single-value movie dimension with runtime, budget, and production-country bands.
+    description: Movie dimension with the required Vietnamese runtime and budget bands.
+    config:
+      contract:
+        enforced: true
+    constraints:
+      - type: primary_key
+        columns: [movie_sk]
+      - type: unique
+        columns: [movie_nk]
     columns:
       - name: movie_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests: [not_null, unique]
       - name: movie_nk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests: [not_null, unique]
+      - name: title
+        data_type: text
+        constraints: [{type: not_null}]
+        data_tests: [not_null]
+      - name: original_title
+        data_type: text
+      - name: status
+        data_type: varchar(50)
+      - name: runtime_band
+        data_type: varchar(50)
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Dưới 90 phút', '90–119 phút', '120–149 phút', 'Từ 150 phút trở lên', 'Không rõ']
+      - name: budget_band
+        data_type: varchar(50)
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Dưới 1 triệu USD', '1–10 triệu', '10–50 triệu', '50–100 triệu', 'Từ 100 triệu trở lên', 'Không rõ']
+      - name: country_count
+        data_type: integer
+      - name: country_type
+        data_type: varchar(50)
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Single-country', 'Multi-country', 'Unknown']
 
   - name: dim_language
-    description: Original-language dimension; language names currently use source language codes.
+    description: Original language dimension with integer SK and unk default row.
+    config:
+      contract:
+        enforced: true
+    constraints:
+      - type: primary_key
+        columns: [language_sk]
+      - type: unique
+        columns: [language_nk]
     columns:
       - name: language_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests: [not_null, unique]
+      - name: language_nk
+        data_type: varchar(10)
+        constraints: [{type: not_null}]
+        data_tests: [not_null, unique]
+      - name: language_name
+        data_type: varchar(100)
+      - name: language_group
+        data_type: varchar(20)
+        constraints: [{type: not_null}]
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['English', 'Non-English']
 
   - name: dim_genre
+    description: Genre dimension with an integer -1 Unknown row.
+    config:
+      contract:
+        enforced: true
+    constraints:
+      - type: primary_key
+        columns: [genre_sk]
+      - type: unique
+        columns: [genre_nk]
     columns:
       - name: genre_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests: [not_null, unique]
       - name: genre_nk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests: [not_null, unique]
+      - name: genre_name
+        data_type: varchar(100)
+        constraints: [{type: not_null}]
+        data_tests: [not_null]
 
   - name: dim_company
+    description: Production company dimension with an integer -1 Unknown row.
+    config:
+      contract:
+        enforced: true
+    constraints:
+      - type: primary_key
+        columns: [company_sk]
+      - type: unique
+        columns: [company_nk]
     columns:
       - name: company_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests: [not_null, unique]
       - name: company_nk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests: [not_null, unique]
+      - name: company_name
+        data_type: varchar(255)
+        constraints: [{type: not_null}]
+        data_tests: [not_null]
 
   - name: dim_country
-    description: Country dimension; region is mapped for listed codes and Unknown otherwise.
+    description: Country dimension with a -1 Unknown row and starter region mapping.
+    config:
+      contract:
+        enforced: true
+    constraints:
+      - type: primary_key
+        columns: [country_sk]
+      - type: unique
+        columns: [country_code]
     columns:
       - name: country_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests: [not_null, unique]
       - name: country_code
+        data_type: varchar(10)
+        constraints: [{type: not_null}]
         data_tests: [not_null, unique]
+      - name: country_name
+        data_type: varchar(100)
+        constraints: [{type: not_null}]
+        data_tests: [not_null]
+      - name: region
+        data_type: varchar(100)
 
   - name: dim_keyword
-    description: Keyword dimension with a curated theme mapping; unmapped keywords are Other.
+    description: Keyword dimension with a -1 Unknown row and curated theme mapping.
+    config:
+      contract:
+        enforced: true
+    constraints:
+      - type: primary_key
+        columns: [keyword_sk]
+      - type: unique
+        columns: [keyword_nk]
     columns:
       - name: keyword_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests: [not_null, unique]
       - name: keyword_nk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests: [not_null, unique]
+      - name: keyword_name
+        data_type: varchar(255)
+        constraints: [{type: not_null}]
+        data_tests: [not_null]
       - name: theme_group
+        data_type: varchar(50)
+        constraints: [{type: not_null}]
         data_tests:
+          - not_null
           - accepted_values:
               arguments:
                 values: ['Sequel', 'Adaptation', 'Superhero', 'Other']
 
   - name: bridge_movie_genre
+    description: Movie-genre links with fractional allocation weights; empty source arrays map to Unknown.
+    config:
+      contract:
+        enforced: true
+    constraints:
+      - type: primary_key
+        columns: [movie_sk, genre_sk]
+      - type: foreign_key
+        columns: [movie_sk]
+        to: ref('dim_movie')
+        to_columns: [movie_sk]
+      - type: foreign_key
+        columns: [genre_sk]
+        to: ref('dim_genre')
+        to_columns: [genre_sk]
     columns:
       - name: movie_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests:
           - not_null
           - relationships:
@@ -87,6 +261,8 @@ models:
                 to: ref('dim_movie')
                 field: movie_sk
       - name: genre_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests:
           - not_null
           - relationships:
@@ -94,6 +270,8 @@ models:
                 to: ref('dim_genre')
                 field: genre_sk
       - name: weight_factor
+        data_type: decimal(18, 10)
+        constraints: [{type: not_null}]
         data_tests: [not_null]
     data_tests:
       - unique_combination_of_columns:
@@ -105,8 +283,25 @@ models:
             weight_column: weight_factor
 
   - name: bridge_movie_company
+    description: Movie-company links with fractional allocation weights; empty source arrays map to Unknown.
+    config:
+      contract:
+        enforced: true
+    constraints:
+      - type: primary_key
+        columns: [movie_sk, company_sk]
+      - type: foreign_key
+        columns: [movie_sk]
+        to: ref('dim_movie')
+        to_columns: [movie_sk]
+      - type: foreign_key
+        columns: [company_sk]
+        to: ref('dim_company')
+        to_columns: [company_sk]
     columns:
       - name: movie_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests:
           - not_null
           - relationships:
@@ -114,6 +309,8 @@ models:
                 to: ref('dim_movie')
                 field: movie_sk
       - name: company_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests:
           - not_null
           - relationships:
@@ -121,6 +318,8 @@ models:
                 to: ref('dim_company')
                 field: company_sk
       - name: weight_factor
+        data_type: decimal(18, 10)
+        constraints: [{type: not_null}]
         data_tests: [not_null]
     data_tests:
       - unique_combination_of_columns:
@@ -132,8 +331,25 @@ models:
             weight_column: weight_factor
 
   - name: bridge_movie_country
+    description: Movie-country links with fractional allocation weights; empty source arrays map to Unknown.
+    config:
+      contract:
+        enforced: true
+    constraints:
+      - type: primary_key
+        columns: [movie_sk, country_sk]
+      - type: foreign_key
+        columns: [movie_sk]
+        to: ref('dim_movie')
+        to_columns: [movie_sk]
+      - type: foreign_key
+        columns: [country_sk]
+        to: ref('dim_country')
+        to_columns: [country_sk]
     columns:
       - name: movie_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests:
           - not_null
           - relationships:
@@ -141,6 +357,8 @@ models:
                 to: ref('dim_movie')
                 field: movie_sk
       - name: country_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests:
           - not_null
           - relationships:
@@ -148,6 +366,8 @@ models:
                 to: ref('dim_country')
                 field: country_sk
       - name: weight_factor
+        data_type: decimal(18, 10)
+        constraints: [{type: not_null}]
         data_tests: [not_null]
     data_tests:
       - unique_combination_of_columns:
@@ -159,8 +379,25 @@ models:
             weight_column: weight_factor
 
   - name: bridge_movie_keyword
+    description: Movie-keyword tagging links; deliberately has no weight_factor.
+    config:
+      contract:
+        enforced: true
+    constraints:
+      - type: primary_key
+        columns: [movie_sk, keyword_sk]
+      - type: foreign_key
+        columns: [movie_sk]
+        to: ref('dim_movie')
+        to_columns: [movie_sk]
+      - type: foreign_key
+        columns: [keyword_sk]
+        to: ref('dim_keyword')
+        to_columns: [keyword_sk]
     columns:
       - name: movie_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests:
           - not_null
           - relationships:
@@ -168,27 +405,43 @@ models:
                 to: ref('dim_movie')
                 field: movie_sk
       - name: keyword_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests:
           - not_null
           - relationships:
               arguments:
                 to: ref('dim_keyword')
                 field: keyword_sk
-      - name: weight_factor
-        data_tests: [not_null]
     data_tests:
       - unique_combination_of_columns:
           arguments:
             combination_of_columns: [movie_sk, keyword_sk]
-      - weights_sum_to_one:
-          arguments:
-            group_column: movie_sk
-            weight_column: weight_factor
 
   - name: fact_movie
-    description: One row per valid source movie; measures remain at movie grain.
+    description: One row per movie. Financial flags require positive budget and revenue.
+    config:
+      contract:
+        enforced: true
+    constraints:
+      - type: primary_key
+        columns: [movie_sk]
+      - type: foreign_key
+        columns: [movie_sk]
+        to: ref('dim_movie')
+        to_columns: [movie_sk]
+      - type: foreign_key
+        columns: [date_sk]
+        to: ref('dim_date')
+        to_columns: [date_sk]
+      - type: foreign_key
+        columns: [language_sk]
+        to: ref('dim_language')
+        to_columns: [language_sk]
     columns:
       - name: movie_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests:
           - not_null
           - unique
@@ -197,6 +450,8 @@ models:
                 to: ref('dim_movie')
                 field: movie_sk
       - name: date_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests:
           - not_null
           - relationships:
@@ -204,14 +459,52 @@ models:
                 to: ref('dim_date')
                 field: date_sk
       - name: language_sk
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests:
           - not_null
           - relationships:
               arguments:
                 to: ref('dim_language')
                 field: language_sk
-      - name: movie_count
+      - name: budget
+        data_type: numeric(18, 0)
+      - name: revenue
+        data_type: numeric(18, 0)
+      - name: profit
+        data_type: numeric(18, 0)
+      - name: roi
+        data_type: numeric(18, 4)
+      - name: runtime
+        data_type: numeric(5, 1)
+      - name: popularity
+        data_type: numeric(12, 6)
+      - name: vote_average
+        data_type: numeric(4, 1)
+      - name: vote_count
+        data_type: integer
+        constraints: [{type: not_null}]
+      - name: is_finance_valid
+        data_type: integer
+        constraints: [{type: not_null}]
         data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+      - name: is_revenue_over_budget
+        data_type: integer
+        constraints: [{type: not_null}]
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+      - name: movie_count
+        data_type: integer
+        constraints: [{type: not_null}]
+        data_tests:
+          - not_null
           - accepted_values:
               arguments:
                 values: [1]

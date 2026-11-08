@@ -7,7 +7,7 @@ weighted as (
     select
         movie_nk,
         genre_nk,
-        1.0 / count(*) over (partition by movie_nk) as weight_factor
+        (1.0::decimal(18, 10) / count(*) over (partition by movie_nk))::decimal(18, 10) as weight_factor
     from associations
 )
 
