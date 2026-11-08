@@ -1,0 +1,43 @@
+name: tmdb_transform
+version: '1.0.0'
+config-version: 2
+require-dbt-version: '>=1.10.5,<2.0.0'
+
+profile: tmdb_transform
+
+model-paths: ['models']
+seed-paths: ['seeds']
+test-paths: ['tests']
+macro-paths: ['macros']
+target-path: 'target'
+clean-targets:
+  - 'target'
+  - 'dbt_packages'
+  - 'logs'
+
+models:
+  tmdb_transform:
+    staging:
+      +schema: staging
+      +materialized: view
+    dimensions:
+      +schema: dds
+      +materialized: table
+    bridge:
+      +schema: dds
+      +materialized: table
+    facts:
+      +schema: dds
+      +materialized: table
+
+seeds:
+  tmdb_transform:
+    +schema: dds
+    country_region:
+      +column_types:
+        country_code: varchar(10)
+        region: varchar(50)
+    keyword_theme_mapping:
+      +column_types:
+        keyword_name: varchar(200)
+        theme_group: varchar(30)

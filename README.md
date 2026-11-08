@@ -1,219 +1,103 @@
-# TMDB 5000 Movie Data Warehouse & BI Analytics System
+# TMDB 5000 Movie Data Warehouse & BI Analytics
 
-Dự án xây dựng hệ thống Kho dữ liệu (Data Warehouse), đường ống xử lý dữ liệu (ELT Pipeline), Báo cáo thông minh (BI Dashboard) và Trợ lý phân tích AI (Generative AI) cho bộ dữ liệu **TMDB 5000 Movie Dataset**.
+Dự án hướng tới xây dựng hệ thống BI tích hợp Generative AI cho TMDB 5000 Movie Dataset. Tài liệu này phân biệt mã nguồn đã có với pipeline đã chạy được xác nhận; số liệu trong báo cáo Giai đoạn 1 là bằng chứng lịch sử, không phải kết quả chạy lại ở máy hiện tại.
 
-## 1. Kiến trúc Kỹ thuật (Technical Stack)
+## Trạng thái hiện tại
 
-Hệ thống được thiết kế theo mô hình **Modern Data Stack** kết hợp kiến trúc 3 tầng (**Source → Staging → DDS / Star Schema**):
+| Hạng mục | Trạng thái |
+|---|---|
+| Mage Source → PostgreSQL Staging | Có Full Load với làm sạch cơ bản và exporter `replace`. Báo cáo Giai đoạn 1 ghi nhận 4.803 dòng cho mỗi bảng. |
+| Incremental Load | Có batch demo append movies. Watermark không lọc batch và graph chưa bảo đảm append thành công trước khi cập nhật LSET; không chạy lặp batch. |
+| Giai đoạn 2: dbt / DDS | Đã có project dbt, mô hình staging, Dimension, Bridge, Fact và dbt data tests. Chưa chạy `dbt build` trên database hiện tại. |
+| Power BI / Generative AI | Chưa triển khai trong repository. |
 
-| Tầng xử lý | Công cụ | Vai trò trong dự án |
-| :--- | :--- | :--- |
-| **Data Sources** | CSV / Kaggle | 2 tệp dữ liệu chính từ Kaggle: `tmdb_5000_movies.csv` và `tmdb_5000_credits.csv` (~4.800 bộ phim). |
-| **Data Ingestion & Orchestration** | **Mage.ai** | Điều phối luồng đọc dữ liệu thô từ CSV, kiểm tra chất lượng ban đầu, nạp Full Load / Incremental Load vào PostgreSQL Staging và ghi log thực thi. |
-| **Staging Database** | **PostgreSQL** | Lưu trữ dữ liệu bảng tạm ở schema `stage` (`stg_tmdb_movies`, `stg_tmdb_credits`) và bảng ghi nhận trạng thái điều phối ở schema `control`. |
-| **Data Transformation & Testing** | **dbt (`dbt-postgres`)** | Kết nối PostgreSQL Staging, chuẩn hóa dữ liệu (đổi 0 thành NULL), bóc tách mảng JSON phức tạp, tính trọng số `WeightFactor`, sinh Surrogate Key, xây dựng Dimension/Bridge/Fact và chạy `dbt test`. |
-| **Data Warehouse (DDS & OLAP)** | **PostgreSQL** | Lưu trữ mô hình **Star Schema** mở rộng tại schema `dds` gồm `FactMovie`, 3 bảng Dim đơn trị, 4 bảng Dim đa trị và 4 bảng Bridge xử lý quan hệ nhiều - nhiều. |
-| **BI & Visualization** | **Power BI (`.pbip` / `.pbix`)** | Thiết lập Semantic Model, định nghĩa các chỉ số đo lường bằng DAX (`Profit`, `ROI`, `AvgRating`,...) và trực quan hóa 02 trang Dashboard (Overview & Diagnostic). |
-| **Generative AI** | **LLM / API** | Tự động tổng hợp bản tóm tắt KPI (AI Summary), diễn giải xu hướng/biến động tài chính và giải đáp câu hỏi tự nhiên dựa trên dữ liệu đã tính toán. |
+## Kiến trúc
 
----
+| Tầng | Công nghệ | Nội dung |
+|---|---|---|
+| Source | Kaggle CSV | `tmdb_5000_movies.csv` và `tmdb_5000_credits.csv` |
+| Raw Staging | Mage.ai + PostgreSQL | Bảng nguồn `stage.stg_tmdb_movies`, `stage.stg_tmdb_credits` |
+| Transformation | dbt + PostgreSQL | Views chuẩn hóa trong `staging`; JSON associations; data tests |
+| DDS | PostgreSQL | `dim_*`, `bridge_movie_*`, `fact_movie` trong schema `dds` |
+| BI / AI | Power BI + LLM/API | Hai dashboard và AI-assisted analytics là các hạng mục sau, chưa có trong repo |
 
-## 2. Cấu trúc Cây Thư mục
+Fact có grain một dòng cho mỗi phim. Quan hệ đa trị được tách sang bốn Bridge; mỗi Bridge có `weight_factor = 1 / số liên kết của phim` để phân bổ các measure khi tổng hợp. Giá trị `budget = 0` và `revenue = 0` được chuẩn hóa thành `NULL`; `profit = revenue - budget`; `roi = profit / budget`.
+
+## Cấu trúc repository
 
 ```text
 DE-MiniProject-TMDB/
-├── README.md                                        # Tài liệu hướng dẫn quy trình làm việc và sử dụng Git
-├── compose.yaml                                     # Khởi chạy Docker chứa Mage.ai + PostgreSQL 17
-├── Dockerfile                                       # Docker Image cấu hình Mage.ai tích hợp dbt-postgres
-├── .env                                             # [Git Ignore] Biến môi trường mật khẩu & kết nối
-├── .gitignore                                       # Chặn file cấu hình bảo mật và file dữ liệu thô
-├── io_config.yaml                                   # [Git Ignore] Cấu hình profile kết nối Postgres cho Mage.ai
-├── profiles.yml                                     # [Git Ignore] Cấu hình profile kết nối Postgres cho dbt
-│
-├── data/                                            # Quản lý dữ liệu nguồn
-│   └── raw/                                         # [Git Ignore] File tmdb_5000_movies.csv & credits.csv tại máy cá nhân
-│
-├── postgres/                                        # [Khoa] DDL SQL khởi tạo các Schema
-│   └── init/                                        # File 01_init.sql tạo schema stage, dds, control
-│
-├── mage_pipeline/                                   # [Khoa & Vân] Pipeline Ingestion & Orchestration
-│   ├── pipelines/                                   # Flow điều phối công việc
-│   ├── data_loaders/                                # Block đọc file CSV nguồn
-│   ├── transformers/                                # Block lọc dữ liệu incremental & chuẩn hóa
-│   └── data_exporters/                              # Block nạp dữ liệu vào Postgres Staging
-│
-├── dbt_transform/                                   # [Tuấn, Thịnh, Vân] Transformation & Data Quality Tests
+├── compose.yaml
+├── postgres/init/01_init.sql
+├── mage_pipeline/                 # Loader, transformer, exporter, pipeline Mage
+├── dbt_transform/
 │   ├── dbt_project.yml
-│   ├── packages.yml
-│   ├── seeds/                                       # [Thịnh] Seed file ánh xạ ThemeGroup cho Keyword
-│   ├── models/
-│   │   ├── staging/                                 # [Tuấn] Staging views đổi 0 thành NULL & làm sạch
-│   │   ├── dimensions/                              # [Tuấn] DimDate, DimMovie, DimLanguage
-│   │   ├── bridge/                                  # [Thịnh] DimGenre, DimCompany, DimCountry, DimKeyword & 4 Bridge tables
-│   │   └── facts/                                   # [Vân] FactMovie & các chỉ số đo lường
-│   └── tests/                                       # [Vân] Bộ kiểm thử chất lượng dữ liệu (dbt tests)
-│
-├── powerbi_dashboard/                               # [Cả nhóm] File Power BI Project (.pbip/.pbix) & công thức DAX
-└── docs/                                            # Tài liệu sơ đồ thiết kế, kiểm thử và báo cáo đồ án
-    ├── diagrams/                                    # Sơ đồ ERD, Star Schema, Lineage DAG Diagram
-    └── reports/                                     # Báo cáo PDF cá nhân và tổng hợp dự án
+│   ├── profiles.yml.example
+│   ├── models/staging/             # Sources, clean views, parsed JSON associations
+│   ├── models/dimensions/          # Date, Movie, Language, Genre, Company, Country, Keyword
+│   ├── models/bridge/              # Bốn movie association bridges
+│   ├── models/facts/fact_movie.sql
+│   ├── seeds/                      # Country region and keyword theme mappings
+│   └── macros/                     # Schema and data-test macros
+├── powerbi_dashboard/              # Chưa có project Power BI
+├── docs/                           # Chưa có sơ đồ/tài liệu được commit
+└── test/                           # Script đối chiếu CSV và PostgreSQL
 ```
 
----
+CSV nguồn, `.env`, Mage `io_config.yaml` và dbt `profiles.yml` là cục bộ, không commit. `postgres/init/01_init.sql` tạo schema `stage`, `staging`, `dds`, `control` và watermark row cho incremental demo. PostgreSQL chỉ tự chạy init scripts khi khởi tạo data volume mới; nếu volume đã có sẵn, cần áp dụng DDL cập nhật thủ công.
 
-## 3. Phân công Nhiệm vụ & Vùng Làm việc trên Git
+## Cài đặt và chạy
 
-Để tránh xung đột khi gộp nhánh (Merge Conflict), mỗi thành viên chỉ chỉnh sửa trực tiếp các thư mục thuộc phạm vi phụ trách của mình:
+### 1. Khởi chạy Mage và PostgreSQL
 
-| Thành viên | Vai trò chính | Nhánh làm việc (`Feature Branch`) | Thư mục phụ trách chính | Người Review & Chạy thử chéo |
-| :--- | :--- | :--- | :--- | :--- |
-| **Khoa** | **Data Ingestion & Staging** (Source CSV → Postgres Stage; Mage Pipeline & Control Logs) | `feat/ingestion-khoa` | `mage_pipeline/`, `postgres/init/`, `docs/reports/` | **Tuấn** |
-| **Tuấn** | **Single-value Dimensions** (Staging → DimDate, DimMovie, DimLanguage; Ép kiểu & Surrogate Key) | `feat/dim-tuan` | `dbt_transform/models/staging/`, `dbt_transform/models/dimensions/` | **Thịnh** |
-| **Thịnh** | **JSON Parsing & Bridge Tables** (Bóc tách chuỗi JSON → Dim & Bridge Genre, Company, Country, Keyword) | `feat/bridge-thinh` | `dbt_transform/models/bridge/`, `dbt_transform/seeds/` | **Vân** |
-| **Vân** | **Fact, Testing, BI & AI** (Xây dựng `FactMovie`, dbt tests, Power BI Dashboard, tích hợp GenAI & Báo cáo) | `feat/fact-van` | `dbt_transform/models/facts/`, `dbt_transform/tests/`, `powerbi_dashboard/`, `docs/` | **Khoa** |
+1. Tạo `.env` từ `.env.example` và đặt mật khẩu riêng.
+2. Đặt hai CSV nguồn trong `data/raw/`.
+3. Tạo `mage_pipeline/io_config.yaml` trỏ đến PostgreSQL Compose (mặc định database `warehouse`, user `labuser`, host nội bộ Docker `postgres`).
+4. Chạy `docker compose up -d`, mở Mage tại `http://localhost:6789` và chạy pipeline `tmdb_ingestion`.
 
----
+### 2. Chạy dbt trên máy host
 
-## 4. Hướng dẫn Khởi chạy Nhanh (Local Setup)
+Yêu cầu Python và adapter PostgreSQL của dbt. Từ thư mục gốc repository, chạy:
 
-### Bước 1: Chuẩn bị môi trường & Dữ liệu
-1. Sao chép và tạo các file cấu hình môi trường cục bộ từ mẫu:
-   ```bash
-   cp .env.example .env
-   ```
-   Thay `change-me-before-running` trong `.env` bằng mật khẩu riêng trên máy của bạn.
-2. Tải tệp `tmdb_5000_movies.csv` và `tmdb_5000_credits.csv` từ Kaggle đặt vào thư mục `data/raw/` (thư mục này đã bị `.gitignore` chặn nên không lo push nhầm lên Git).
-
-### Bước 2: Khởi động PostgreSQL và Mage.ai bằng Docker
-Chạy lệnh khởi động các container dịch vụ:
-```bash
-docker compose up -d
-```
-* Giao diện **Mage.ai**: Truy cập tại `http://localhost:6789`
-* CSDL **PostgreSQL**: Kết nối qua `localhost:5432` (Database: `warehouse`, User: `labuser`)
-
-### Bước 3: Chạy Pipeline Ingestion & dbt Transformations
-1. Truy cập giao diện Mage.ai, chạy pipeline `tmdb_ingestion` để đọc CSV và nạp vào schema `stage`.
-2. Chuyển vào thư mục `dbt_transform` (hoặc mở Terminal bên trong container Mage) để chạy chuyển đổi dữ liệu:
-```bash
-cd dbt_transform
-dbt deps                              # Cài đặt gói mở rộng dbt_utils
-dbt seed                              # Nạp bảng danh mục tĩnh ánh xạ Keyword -> ThemeGroup
-dbt run --select staging              # Tạo các staging views chuẩn hóa dữ liệu
-dbt run --select dimensions           # Tạo các bảng Dimension đơn trị (DimDate, DimMovie, DimLanguage)
-dbt run --select bridge               # Bóc tách JSON, tạo các bảng Dim đa trị và Bridge tables
-dbt run --select facts                # Tạo bảng FactMovie
-dbt test                              # Chạy toàn bộ bộ kiểm thử chất lượng dữ liệu
-dbt docs generate                     # Sinh tài liệu và sơ đồ phụ thuộc Lineage DAG
+```powershell
+python -m pip install dbt-postgres
+Copy-Item dbt_transform\profiles.yml.example dbt_transform\profiles.yml
 ```
 
----
+Sửa mật khẩu trong `dbt_transform/profiles.yml` cho trùng `.env`, rồi chạy:
 
-## 5. Quy trình Làm việc với Git (Git Workflow)
-
-Nhóm sử dụng mô hình **3 tầng nhánh** để đảm bảo nhánh nộp bài luôn chạy ổn định:
-* **`main`**: Nhánh chính thức, chỉ chứa code đã kiểm thử hoàn chỉnh để đóng gói nộp bài. Không ai được push trực tiếp lên `main`.
-* **`develop`**: Nhánh tích hợp chung của cả 4 thành viên. Khi hoàn thành một phần việc, thành viên tạo Pull Request (PR) gộp vào `develop`.
-* **`feat/<ten-phan-viec>-<ten-thanh-vien>`**: Nhánh làm việc cá nhân của từng người (ví dụ: `feat/ingestion-khoa`, `feat/dim-tuan`, `feat/bridge-thinh`, `feat/fact-van`).
-
-### Các bước thao tác Git hàng ngày
-
-#### 1. Lần đầu tiên lấy dự án về máy
-```bash
-git clone https://github.com/BachKhaVan/DE-MiniProject-TMDB.git
-cd DE-MiniProject-TMDB
-git checkout develop
-git checkout -b feat/ingestion-khoa        # Thay bằng tên nhánh cá nhân của bạn
+```powershell
+Set-Location dbt_transform
+dbt debug --profiles-dir .
+dbt build --profiles-dir .
+dbt docs generate --profiles-dir .
 ```
 
-#### 2. Trước khi bắt đầu code mỗi ngày (Cập nhật code mới nhất từ nhóm)
-Luôn kéo code mới nhất từ nhánh `develop` về nhánh cá nhân trước khi làm việc để tránh lệch cấu trúc bảng:
-```bash
-git checkout develop
-git pull origin develop
-git checkout feat/ingestion-khoa           # Quay lại nhánh cá nhân
-git merge develop                          # Gộp cập nhật mới nhất từ develop vào nhánh của mình
+`dbt build` sẽ tạo seed, models và chạy data tests theo dependency graph. Source tables phải được tạo trước bằng Mage. Chi tiết model và mapping nằm trong [dbt_transform/README.md](dbt_transform/README.md); profile có mật khẩu thật bị gitignore.
+
+### 3. Đối chiếu dữ liệu nguồn và staging
+
+Từ thư mục gốc repository:
+
+```powershell
+python test\validate_tmdb.py --flow full
 ```
 
-#### 3. Khi code xong một tính năng / script và muốn lưu lên Git
-```bash
-# 1. Kiểm tra những file nào vừa bị thay đổi (đảm bảo không dính file dữ liệu nặng hay mật khẩu)
-git status
+Script chỉ đọc CSV và PostgreSQL, sau đó ghi báo cáo mới vào `test/results/`; nó không chạy pipeline hay sửa database. Hướng dẫn Incremental Load và các giới hạn hiện tại ở [test/README_test.md](test/README_test.md).
 
-# 2. Đưa các file cần lưu vào vùng chờ (Staging Area)
-git add <duong-dan-thu-muc-cua-ban>
-# Ví dụ: git add dbt_transform/models/dimensions/
+## Mô hình DDS
 
-# 3. Tạo commit với nội dung rõ ràng theo chuẩn quy ước của nhóm
-git commit -m "feat(dim): implement dim_movie with runtime_band and budget_band"
+- `dim_date`: ngày phát hành, thuộc tính ngày/tháng/quý/năm/thập niên; `date_sk = -1` là ngày không rõ.
+- `dim_movie`: tiêu đề, trạng thái, nhóm runtime/budget và loại hợp tác quốc gia.
+- `dim_language`: mã ngôn ngữ gốc; hiện `language_name` dùng mã nguồn, chưa có bảng dịch tên ngôn ngữ.
+- `dim_genre`, `dim_company`, `dim_country`, `dim_keyword`: các chiều đa trị tách từ JSON.
+- `bridge_movie_genre`, `bridge_movie_company`, `bridge_movie_country`, `bridge_movie_keyword`: mỗi liên kết có `weight_factor`; keyword bridge cũng có trọng số để thống nhất thiết kế.
+- `fact_movie`: một dòng/phim với budget, revenue, profit, ROI và chỉ số khán giả.
 
-# 4. Đẩy code từ máy cá nhân lên GitHub
-git push origin feat/ingestion-khoa
-```
+Country region seed hiện chỉ ánh xạ một số mã phổ biến; mã còn lại là `Unknown`. Keyword theme seed là mapping biên tập ban đầu; từ khóa chưa ánh xạ vào `Other`. Hai mapping cần được rà soát trước khi dùng kết quả cho dashboard.
 
-#### 4. Tạo Pull Request (PR) để ghép code vào `develop`
-1. Lên trang GitHub của nhóm, bấm **Compare & pull request** từ nhánh cá nhân (`feat/...`) vào nhánh **`develop`**.
-2. Điền ngắn gọn trong phần mô tả PR:
-   * **Input nhận vào**: (ví dụ: bảng `stg_tmdb_movies` từ PostgreSQL Stage).
-   * **Output tạo ra**: (ví dụ: bảng `dim_movie`, `dim_date` trong schema `dds`).
-   * **Cách chạy thử**: (ví dụ: `dbt run --select dim_movie`).
-3. Gắn thẻ (**Assign Reviewer**) thành viên phụ trách kiểm thử chéo theo bảng phân công ở Mục 3 để duyệt và nhấn **Merge pull request**.
+## Quy ước nhóm và Git
 
----
+Nhóm tích hợp qua `develop`, làm việc trên `feat/<phạm-vi>-<tên>` và mở pull request vào `develop`. Không push trực tiếp lên `main` hoặc `develop`. Commit theo mẫu `<type>(<scope>): <mô tả>`, ví dụ `feat(dbt): build movie fact and dimensions` hoặc `docs(report): update phase status`.
 
-## 6. Quy ước Đặt tên Commit (Commit Message Convention)
-
-Toàn bộ thành viên thống nhất cấu trúc commit như sau để lịch sử Git sạch đẹp, dễ tra cứu:
-
-```text
-<loại_thay_đổi>(<phạm_vi>): <mô_tả_ngắn_gọn_việc_đã_làm>
-```
-
-### Danh sách `<loại_thay_đổi>` (Type)
-* **`feat`**: Thêm mới bảng, pipeline Mage, model dbt, chỉ số DAX hoặc biểu đồ Power BI.
-* **`fix`**: Sửa lỗi kiểu dữ liệu, lỗi parse JSON, lỗi khóa ngoại hoặc lỗi logic tính toán.
-* **`test`**: Thêm hoặc cập nhật dbt test, schema test (`.yml`) hoặc singular test (`.sql`).
-* **`docs`**: Cập nhật tài liệu mapping, sơ đồ ERD, báo cáo cá nhân hoặc `README.md`.
-* **`chore`**: Cập nhật file cấu hình `compose.yaml`, `.gitignore`, `profiles.yml` hoặc `dbt_project.yml`.
-* **`refactor`**: Tối ưu lại câu truy vấn SQL/dbt cho chạy nhanh hơn mà không làm đổi kết quả.
-
-### Danh sách `<phạm_vi>` (Scope) theo từng phần việc
-* **`staging`** hoặc **`mage`**: Phần nạp dữ liệu nguồn và tạo PostgreSQL Stage (Khoa).
-* **`dim`**: Phần các bảng Dimension đơn trị (Tuấn).
-* **`bridge`**: Phần parse JSON, tạo Dim đa trị và Bridge tables (Thịnh).
-* **`fact`**: Phần bảng `FactMovie` và các đo lường tài chính (Vân).
-* **`test`**: Phần kiểm thử chất lượng dữ liệu và ràng buộc mối quan hệ (Vân).
-* **`pbi`**: Phần mô hình DAX, Semantic Model và Power BI Dashboard (Cả nhóm).
-* **`genai`**: Phần tích hợp mô hình AI tóm tắt & diễn giải insight (Vân).
-* **`report`**: Phần tổng hợp báo cáo đồ án PDF (Cả nhóm).
-
-### Ví dụ Commit chuẩn cho từng thành viên
-* **Khoa**:
-  * `feat(staging): create postgres init DDL for stage, dds, control schemas`
-  * `feat(mage): build csv data loader and postgres exporter blocks`
-  * `docs(report): add data ingestion architecture section`
-* **Tuấn**:
-  * `feat(dim): build stg_tmdb_movies model converting 0 budget to null`
-  * `feat(dim): implement dim_date and dim_language models with surrogate keys`
-  * `fix(dim): handle missing release_date with unknown surrogate key -1`
-* **Thịnh**:
-  * `feat(bridge): parse json string for genres and create bridge_movie_genre`
-  * `feat(bridge): calculate weight_factor for multi-valued dimensions`
-  * `feat(bridge): add seed file mapping keywords to theme_groups`
-* **Vân**:
-  * `feat(fact): construct fact_movie model with profit and roi measures`
-  * `test(fact): add primary key and foreign key relationship dbt tests`
-  * `feat(pbi): design overview dashboard page with descriptive analytics`
-  * `feat(genai): integrate llm summary generator for dashboard kpis`
-
----
-
-## 7. Năm Nguyên tắc Khi Dùng Git Trong Nhóm
-
-1. **Tuyệt đối không commit dữ liệu thô (`data/raw/`) và file chứa mật khẩu (`.env`, `profiles.yml`, `io_config.yaml`)**: Trước khi gõ `git commit`, luôn chạy `git status` để chắc chắn không dính file `.csv` nặng hay file cấu hình tài khoản.
-2. **Không dùng `git add .` một cách mù quáng**: Hãy dùng `git status` rồi `git add <đường_dẫn_thư_mục_của_bạn>` để tránh vô tình đẩy các file cấu hình tạm trên máy cá nhân lên kho chung.
-3. **Kiểm tra kỹ chỉ số `WeightFactor` trên các bảng Bridge**: Khi tổng hợp chỉ số tài chính (`Revenue`, `Profit`) qua chiều đa trị (Thể loại, Hãng sản xuất, Quốc gia), phải nhân với `WeightFactor` để tránh nhân đôi/nhân ba doanh thu thực tế của bộ phim.
-4. **Ghi rõ điều kiện lọc dữ liệu trong tài liệu & commit**: Khi xử lý lọc dữ liệu tài chính chưa hợp lệ (`budget = 0` hoặc `revenue = 0`), cần ghi rõ điều kiện trong file model và báo cáo để số liệu kiểm thử khớp 100%.
-5. **Không bao giờ dùng `git push --force` lên nhánh `develop` hoặc `main`**: Mọi xung đột (Conflict) phải được xử lý tại nhánh cá nhân bằng cách `git merge develop` và trao đổi trực tiếp với thành viên liên quan.
-
----
+Không commit `.env`, mật khẩu, cấu hình kết nối riêng hoặc CSV thô. Khi tổng hợp qua chiều đa trị, dùng `weight_factor` để tránh nhân lặp measures.

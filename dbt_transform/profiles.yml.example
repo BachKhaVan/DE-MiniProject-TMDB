@@ -1,0 +1,13 @@
+tmdb_transform:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      user: labuser
+      password: change-me-before-running
+      port: 5432
+      dbname: warehouse
+      schema: dds
+      threads: 4
+      connect_timeout: 10
