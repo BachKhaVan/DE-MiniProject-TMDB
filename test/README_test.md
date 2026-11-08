@@ -21,6 +21,12 @@ Mỗi lần chạy tạo một báo cáo mới trong `test/results/`.
 3. Đặt hai CSV nguồn `tmdb_5000_movies.csv` và `tmdb_5000_credits.csv` trong
    `data/raw/`. Đảm bảo `mage_pipeline/io_config.yaml` đã cấu hình kết nối tới
    cùng PostgreSQL/database mà Compose sử dụng.
+   `postgres/init/01_init.sql` tạo schema và bảng watermark cho database mới.
+   Với Docker volume PostgreSQL đã tồn tại từ trước, áp dụng lại DDL an toàn bằng:
+
+   ```powershell
+   docker compose exec -T postgres psql -U labuser -d warehouse -f /docker-entrypoint-initdb.d/01_init.sql
+   ```
 4. Chạy lệnh từ thư mục gốc repository bằng PowerShell:
 
    ```powershell
@@ -41,7 +47,9 @@ Mỗi lần chạy tạo một báo cáo mới trong `test/results/`.
 ### Giới hạn cần biết về watermark
 
 `get_watermark` đọc `control.etl_watermark.lset`, còn loader incremental hiện
-đọc CSV batch nguyên trạng và exporter append dữ liệu. Vì vậy script báo cáo
+đọc CSV batch nguyên trạng và exporter append dữ liệu. Init SQL tạo bảng/dòng
+watermark trên database mới; volume cũ cần áp dụng lại DDL như hướng dẫn trên.
+Vì vậy script báo cáo
 `lset` quan sát được, nhưng không coi watermark là bằng chứng exporter đã chạy
 thành công hay batch được lọc theo watermark. Nếu thiếu bảng hoặc dòng watermark,
 báo cáo sẽ ghi rõ trạng thái và lý do.

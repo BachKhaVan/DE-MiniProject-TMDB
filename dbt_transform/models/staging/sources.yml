@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: tmdb_stage
+    description: Raw tables loaded by the Mage ingestion pipelines.
+    schema: stage
+    tables:
+      - name: stg_tmdb_movies
+        description: One source row per TMDB movie before dbt transformations.
+        columns:
+          - name: id
+            data_tests: [not_null, unique]
+      - name: stg_tmdb_credits
+        description: Cast and crew JSON supplied by the TMDB credits CSV.
+        columns:
+          - name: movie_id
+            data_tests: [not_null, unique]

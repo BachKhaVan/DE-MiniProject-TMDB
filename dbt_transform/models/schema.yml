@@ -1,0 +1,217 @@
+version: 2
+
+models:
+  - name: stg_tmdb_movies
+    description: Cleaned movie rows; one deterministic row per source movie ID.
+    columns:
+      - name: movie_nk
+        description: TMDB natural key.
+        data_tests: [not_null, unique]
+      - name: title
+        data_tests: [not_null]
+
+  - name: stg_tmdb_credits
+    description: Cleaned cast and crew payloads; retained for future analysis.
+    columns:
+      - name: movie_nk
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('stg_tmdb_movies')
+                field: movie_nk
+
+  - name: dim_date
+    description: Calendar dimension generated across observed release dates, with -1 for unknown dates.
+    columns:
+      - name: date_sk
+        data_tests: [not_null, unique]
+
+  - name: dim_movie
+    description: Single-value movie dimension with runtime, budget, and production-country bands.
+    columns:
+      - name: movie_sk
+        data_tests: [not_null, unique]
+      - name: movie_nk
+        data_tests: [not_null, unique]
+
+  - name: dim_language
+    description: Original-language dimension; language names currently use source language codes.
+    columns:
+      - name: language_sk
+        data_tests: [not_null, unique]
+
+  - name: dim_genre
+    columns:
+      - name: genre_sk
+        data_tests: [not_null, unique]
+      - name: genre_nk
+        data_tests: [not_null, unique]
+
+  - name: dim_company
+    columns:
+      - name: company_sk
+        data_tests: [not_null, unique]
+      - name: company_nk
+        data_tests: [not_null, unique]
+
+  - name: dim_country
+    description: Country dimension; region is mapped for listed codes and Unknown otherwise.
+    columns:
+      - name: country_sk
+        data_tests: [not_null, unique]
+      - name: country_code
+        data_tests: [not_null, unique]
+
+  - name: dim_keyword
+    description: Keyword dimension with a curated theme mapping; unmapped keywords are Other.
+    columns:
+      - name: keyword_sk
+        data_tests: [not_null, unique]
+      - name: keyword_nk
+        data_tests: [not_null, unique]
+      - name: theme_group
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Sequel', 'Adaptation', 'Superhero', 'Other']
+
+  - name: bridge_movie_genre
+    columns:
+      - name: movie_sk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_movie')
+                field: movie_sk
+      - name: genre_sk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_genre')
+                field: genre_sk
+      - name: weight_factor
+        data_tests: [not_null]
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [movie_sk, genre_sk]
+      - weights_sum_to_one:
+          arguments:
+            group_column: movie_sk
+            weight_column: weight_factor
+
+  - name: bridge_movie_company
+    columns:
+      - name: movie_sk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_movie')
+                field: movie_sk
+      - name: company_sk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_company')
+                field: company_sk
+      - name: weight_factor
+        data_tests: [not_null]
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [movie_sk, company_sk]
+      - weights_sum_to_one:
+          arguments:
+            group_column: movie_sk
+            weight_column: weight_factor
+
+  - name: bridge_movie_country
+    columns:
+      - name: movie_sk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_movie')
+                field: movie_sk
+      - name: country_sk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_country')
+                field: country_sk
+      - name: weight_factor
+        data_tests: [not_null]
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [movie_sk, country_sk]
+      - weights_sum_to_one:
+          arguments:
+            group_column: movie_sk
+            weight_column: weight_factor
+
+  - name: bridge_movie_keyword
+    columns:
+      - name: movie_sk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_movie')
+                field: movie_sk
+      - name: keyword_sk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_keyword')
+                field: keyword_sk
+      - name: weight_factor
+        data_tests: [not_null]
+    data_tests:
+      - unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [movie_sk, keyword_sk]
+      - weights_sum_to_one:
+          arguments:
+            group_column: movie_sk
+            weight_column: weight_factor
+
+  - name: fact_movie
+    description: One row per valid source movie; measures remain at movie grain.
+    columns:
+      - name: movie_sk
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('dim_movie')
+                field: movie_sk
+      - name: date_sk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_sk
+      - name: language_sk
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_language')
+                field: language_sk
+      - name: movie_count
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1]
