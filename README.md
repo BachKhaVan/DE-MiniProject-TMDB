@@ -44,7 +44,7 @@ DE-MiniProject-TMDB/
 └── test/                           # Script đối chiếu CSV và PostgreSQL
 ```
 
-CSV nguồn, `.env`, Mage `io_config.yaml` và dbt `profiles.yml` là cục bộ, không commit. `postgres/init/01_init.sql` tạo schema `stage`, `staging`, `dds`, `control` và watermark row cho incremental demo. PostgreSQL chỉ tự chạy init scripts khi khởi tạo data volume mới; nếu volume đã có sẵn, cần áp dụng DDL cập nhật thủ công.
+CSV nguồn, `.env`, Mage `io_config.yaml` và dbt `profiles.yml` là cục bộ, không commit. `postgres/init/01_init.sql` tạo schema `stage`, `staging`, `dds`, `control` và watermark row cho incremental demo; `postgres/init/02_dds_schema.sql` khởi tạo các bảng `dds.dim_*`, `dds.fact_movie` và các bridge table với dữ liệu Unknown mặc định. PostgreSQL chỉ tự chạy init scripts khi khởi tạo data volume mới; nếu volume đã có sẵn, cần áp dụng DDL cập nhật thủ công.
 
 ## Cài đặt và chạy
 
