@@ -29,6 +29,7 @@ models:
     facts:
       +schema: dds
       +materialized: table
+      +post-hook: "alter table {{ this }} alter column vote_count set default 0"
 
 seeds:
   tmdb_transform:
@@ -41,3 +42,7 @@ seeds:
       +column_types:
         keyword_name: varchar(200)
         theme_group: varchar(30)
+    language_name_mapping:
+      +column_types:
+        language_nk: varchar(10)
+        language_name: varchar(100)

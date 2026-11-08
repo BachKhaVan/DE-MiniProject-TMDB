@@ -1,6 +1,6 @@
 select distinct
     m.movie_nk,
-    nullif(item.value ->> 'id', '')::bigint as keyword_nk,
+    nullif(item.value ->> 'id', '')::integer as keyword_nk,
     nullif(btrim(item.value ->> 'name'), '') as keyword_name
 from {{ ref('stg_tmdb_movies') }} as m
 cross join lateral jsonb_array_elements(
