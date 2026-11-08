@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   postgres:
     image: postgres:17
@@ -10,8 +9,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pg_data:/var/lib/postgresql/data
-      - ./postgres/init:/docker-entrypoint-initdb.d
+    - pg_data:/var/lib/postgresql/data
+    - ./postgres/init/01_init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
 
   mage:
     image: mageai/mageai:latest

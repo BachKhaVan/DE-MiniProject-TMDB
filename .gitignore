@@ -2,6 +2,7 @@
 .env
 profiles.yml
 io_config.yaml
+.venv/
 
 # dbt build artifacts
 target/

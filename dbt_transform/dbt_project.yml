@@ -20,16 +20,24 @@ models:
     staging:
       +schema: staging
       +materialized: view
+      +docs:
+        node_color: "#3B82F6"
     dimensions:
       +schema: dds
       +materialized: table
+      +docs:
+        node_color: "#0F766E"
     bridge:
       +schema: dds
       +materialized: table
+      +docs:
+        node_color: "#D97706"
     facts:
       +schema: dds
       +materialized: table
       +post-hook: "alter table {{ this }} alter column vote_count set default 0"
+      +docs:
+        node_color: "#7C3AED"
 
 seeds:
   tmdb_transform:

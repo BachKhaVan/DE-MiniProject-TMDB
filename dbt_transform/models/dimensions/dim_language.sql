@@ -7,7 +7,7 @@ with languages as (
 
 known_languages as (
     select
-        row_number() over (order by language_nk)::integer as language_sk,
+        row_number() over (order by l.language_nk)::integer as language_sk,
         l.language_nk,
         coalesce(n.language_name, l.language_nk)::varchar(100) as language_name,
         case when lower(l.language_nk) = 'en' then 'English' else 'Non-English' end::varchar(20) as language_group
