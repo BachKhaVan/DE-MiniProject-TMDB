@@ -3,6 +3,7 @@
 profiles.yml
 io_config.yaml
 .venv/
+.user.yml
 
 # dbt build artifacts
 target/
