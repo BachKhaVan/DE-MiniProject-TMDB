@@ -29,7 +29,7 @@ blocks:
   language: python
   name: update_watermark
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: data_exporter
   upstream_blocks:
@@ -65,7 +65,7 @@ blocks:
   language: python
   name: export_incremental_stage
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: data_exporter
   upstream_blocks:
