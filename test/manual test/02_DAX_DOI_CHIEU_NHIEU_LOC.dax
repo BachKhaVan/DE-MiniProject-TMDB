@@ -1,0 +1,106 @@
+-- Chạy trong Power BI Desktop > DAX Query View, file PBIX đang mở.
+-- Kiểm tra các KPI từ measure thật dưới 7 tổ hợp bộ lọc. Kết quả đặt cạnh SQL cùng case_id.
+-- Xóa tất cả bộ lọc báo cáo khác; các bộ lọc trong TREATAS được khai báo rõ tại đây.
+EVALUATE
+UNION(
+    CALCULATETABLE(
+        ROW(
+            "case_id", "01_ALL",
+            "Movies", [Movie Count],
+        "Valid movies", [Valid Movies],
+        "Revenue (bn USD)", ROUND(DIVIDE([Total Revenue], 1000000000), 2),
+        "Profit (bn USD)", ROUND(DIVIDE([Total Profit], 1000000000), 2),
+        "ROI median (%)", ROUND([ROI Median] * 100, 1),
+        "Over budget (%)", ROUND([Pct Over Budget] * 100, 1)
+        ),
+        TREATAS({"Weighted"}, 'Allocation Mode'[Mode])
+    ),
+    CALCULATETABLE(
+        ROW(
+            "case_id", "02_USA_2014_ACTION",
+            "Movies", [Movie Count],
+        "Valid movies", [Valid Movies],
+        "Revenue (bn USD)", ROUND(DIVIDE([Total Revenue], 1000000000), 2),
+        "Profit (bn USD)", ROUND(DIVIDE([Total Profit], 1000000000), 2),
+        "ROI median (%)", ROUND([ROI Median] * 100, 1),
+        "Over budget (%)", ROUND([Pct Over Budget] * 100, 1)
+        ),
+        TREATAS({"United States of America"}, dim_country[country_name]),
+        TREATAS({2014}, dim_date[year]),
+        TREATAS({"Action"}, dim_genre[genre_name]),
+        TREATAS({"Weighted"}, 'Allocation Mode'[Mode])
+    ),
+    CALCULATETABLE(
+        ROW(
+            "case_id", "03_USA_2014_ALL_GENRES",
+            "Movies", [Movie Count],
+        "Valid movies", [Valid Movies],
+        "Revenue (bn USD)", ROUND(DIVIDE([Total Revenue], 1000000000), 2),
+        "Profit (bn USD)", ROUND(DIVIDE([Total Profit], 1000000000), 2),
+        "ROI median (%)", ROUND([ROI Median] * 100, 1),
+        "Over budget (%)", ROUND([Pct Over Budget] * 100, 1)
+        ),
+        TREATAS({"United States of America"}, dim_country[country_name]),
+        TREATAS({2014}, dim_date[year]),
+        TREATAS({"Weighted"}, 'Allocation Mode'[Mode])
+    ),
+    CALCULATETABLE(
+        ROW(
+            "case_id", "04_ALL_COUNTRIES_2014_ACTION",
+            "Movies", [Movie Count],
+        "Valid movies", [Valid Movies],
+        "Revenue (bn USD)", ROUND(DIVIDE([Total Revenue], 1000000000), 2),
+        "Profit (bn USD)", ROUND(DIVIDE([Total Profit], 1000000000), 2),
+        "ROI median (%)", ROUND([ROI Median] * 100, 1),
+        "Over budget (%)", ROUND([Pct Over Budget] * 100, 1)
+        ),
+        TREATAS({2014}, dim_date[year]),
+        TREATAS({"Action"}, dim_genre[genre_name]),
+        TREATAS({"Weighted"}, 'Allocation Mode'[Mode])
+    ),
+    CALCULATETABLE(
+        ROW(
+            "case_id", "05_USA_2014_COMEDY",
+            "Movies", [Movie Count],
+        "Valid movies", [Valid Movies],
+        "Revenue (bn USD)", ROUND(DIVIDE([Total Revenue], 1000000000), 2),
+        "Profit (bn USD)", ROUND(DIVIDE([Total Profit], 1000000000), 2),
+        "ROI median (%)", ROUND([ROI Median] * 100, 1),
+        "Over budget (%)", ROUND([Pct Over Budget] * 100, 1)
+        ),
+        TREATAS({"United States of America"}, dim_country[country_name]),
+        TREATAS({2014}, dim_date[year]),
+        TREATAS({"Comedy"}, dim_genre[genre_name]),
+        TREATAS({"Weighted"}, 'Allocation Mode'[Mode])
+    ),
+    CALCULATETABLE(
+        ROW(
+            "case_id", "06_USA_2010_ACTION",
+            "Movies", [Movie Count],
+        "Valid movies", [Valid Movies],
+        "Revenue (bn USD)", ROUND(DIVIDE([Total Revenue], 1000000000), 2),
+        "Profit (bn USD)", ROUND(DIVIDE([Total Profit], 1000000000), 2),
+        "ROI median (%)", ROUND([ROI Median] * 100, 1),
+        "Over budget (%)", ROUND([Pct Over Budget] * 100, 1)
+        ),
+        TREATAS({"United States of America"}, dim_country[country_name]),
+        TREATAS({2010}, dim_date[year]),
+        TREATAS({"Action"}, dim_genre[genre_name]),
+        TREATAS({"Weighted"}, 'Allocation Mode'[Mode])
+    ),
+    CALCULATETABLE(
+        ROW(
+            "case_id", "07_JAPAN_ALL_YEARS_ACTION",
+            "Movies", [Movie Count],
+        "Valid movies", [Valid Movies],
+        "Revenue (bn USD)", ROUND(DIVIDE([Total Revenue], 1000000000), 2),
+        "Profit (bn USD)", ROUND(DIVIDE([Total Profit], 1000000000), 2),
+        "ROI median (%)", ROUND([ROI Median] * 100, 1),
+        "Over budget (%)", ROUND([Pct Over Budget] * 100, 1)
+        ),
+        TREATAS({"Japan"}, dim_country[country_name]),
+        TREATAS({"Action"}, dim_genre[genre_name]),
+        TREATAS({"Weighted"}, 'Allocation Mode'[Mode])
+    )
+)
+ORDER BY [case_id]
