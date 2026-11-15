@@ -1,0 +1,1140 @@
+{
+  "id": "BI07",
+  "query": "\nSELECT l.language_name,g.genre_name,count(DISTINCT f.movie_sk) AS rated_movies,\n percentile_cont(0.5) WITHIN GROUP(ORDER BY f.popularity::float8) AS median_popularity,\n percentile_cont(0.5) WITHIN GROUP(ORDER BY f.vote_average::float8) AS median_rating\nFROM dds.fact_movie f JOIN dds.dim_language l USING(language_sk)\nJOIN dds.bridge_movie_genre bg USING(movie_sk) JOIN dds.dim_genre g USING(genre_sk)\nWHERE f.vote_count>=100 AND f.vote_average IS NOT NULL\nGROUP BY l.language_name,g.genre_name ORDER BY l.language_name,g.genre_name",
+  "column_names": [
+    "language_name",
+    "genre_name",
+    "rated_movies",
+    "median_popularity",
+    "median_rating"
+  ],
+  "rows": [
+    {
+      "language_name": "Cantonese",
+      "genre_name": "Action",
+      "rated_movies": 7,
+      "median_popularity": 15.046612,
+      "median_rating": 6.5
+    },
+    {
+      "language_name": "Cantonese",
+      "genre_name": "Comedy",
+      "rated_movies": 6,
+      "median_popularity": 14.352798499999999,
+      "median_rating": 6.55
+    },
+    {
+      "language_name": "Cantonese",
+      "genre_name": "Crime",
+      "rated_movies": 4,
+      "median_popularity": 10.368245,
+      "median_rating": 6.5
+    },
+    {
+      "language_name": "Cantonese",
+      "genre_name": "Drama",
+      "rated_movies": 2,
+      "median_popularity": 15.7703125,
+      "median_rating": 6.3
+    },
+    {
+      "language_name": "Cantonese",
+      "genre_name": "Family",
+      "rated_movies": 1,
+      "median_popularity": 12.373248,
+      "median_rating": 6.1
+    },
+    {
+      "language_name": "Cantonese",
+      "genre_name": "Fantasy",
+      "rated_movies": 2,
+      "median_popularity": 13.016116499999999,
+      "median_rating": 6.65
+    },
+    {
+      "language_name": "Cantonese",
+      "genre_name": "History",
+      "rated_movies": 1,
+      "median_popularity": 19.167377,
+      "median_rating": 6.5
+    },
+    {
+      "language_name": "Cantonese",
+      "genre_name": "Science Fiction",
+      "rated_movies": 1,
+      "median_popularity": 12.373248,
+      "median_rating": 6.1
+    },
+    {
+      "language_name": "Cantonese",
+      "genre_name": "Thriller",
+      "rated_movies": 2,
+      "median_popularity": 12.107352500000001,
+      "median_rating": 6.5
+    },
+    {
+      "language_name": "Chinese",
+      "genre_name": "Action",
+      "rated_movies": 8,
+      "median_popularity": 17.3923825,
+      "median_rating": 6.85
+    },
+    {
+      "language_name": "Chinese",
+      "genre_name": "Adventure",
+      "rated_movies": 5,
+      "median_popularity": 21.064082,
+      "median_rating": 7.1
+    },
+    {
+      "language_name": "Chinese",
+      "genre_name": "Drama",
+      "rated_movies": 10,
+      "median_popularity": 13.751143500000001,
+      "median_rating": 7.0
+    },
+    {
+      "language_name": "Chinese",
+      "genre_name": "Fantasy",
+      "rated_movies": 2,
+      "median_popularity": 11.307646,
+      "median_rating": 6.75
+    },
+    {
+      "language_name": "Chinese",
+      "genre_name": "History",
+      "rated_movies": 4,
+      "median_popularity": 16.2319055,
+      "median_rating": 6.85
+    },
+    {
+      "language_name": "Chinese",
+      "genre_name": "Romance",
+      "rated_movies": 3,
+      "median_popularity": 21.064082,
+      "median_rating": 7.1
+    },
+    {
+      "language_name": "Chinese",
+      "genre_name": "Science Fiction",
+      "rated_movies": 1,
+      "median_popularity": 12.664787,
+      "median_rating": 6.9
+    },
+    {
+      "language_name": "Chinese",
+      "genre_name": "War",
+      "rated_movies": 1,
+      "median_popularity": 12.516546,
+      "median_rating": 7.1
+    },
+    {
+      "language_name": "Danish",
+      "genre_name": "Comedy",
+      "rated_movies": 1,
+      "median_popularity": 38.100488,
+      "median_rating": 5.8
+    },
+    {
+      "language_name": "Danish",
+      "genre_name": "Drama",
+      "rated_movies": 3,
+      "median_popularity": 21.826888,
+      "median_rating": 7.7
+    },
+    {
+      "language_name": "Danish",
+      "genre_name": "Romance",
+      "rated_movies": 1,
+      "median_popularity": 38.100488,
+      "median_rating": 5.8
+    },
+    {
+      "language_name": "Danish",
+      "genre_name": "Science Fiction",
+      "rated_movies": 1,
+      "median_popularity": 36.173598,
+      "median_rating": 7.0
+    },
+    {
+      "language_name": "Dutch",
+      "genre_name": "Drama",
+      "rated_movies": 1,
+      "median_popularity": 13.906611,
+      "median_rating": 7.2
+    },
+    {
+      "language_name": "Dutch",
+      "genre_name": "Thriller",
+      "rated_movies": 1,
+      "median_popularity": 13.906611,
+      "median_rating": 7.2
+    },
+    {
+      "language_name": "Dutch",
+      "genre_name": "War",
+      "rated_movies": 1,
+      "median_popularity": 13.906611,
+      "median_rating": 7.2
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Action",
+      "rated_movies": 847,
+      "median_popularity": 28.675891,
+      "median_rating": 6.1
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Adventure",
+      "rated_movies": 632,
+      "median_popularity": 32.4882655,
+      "median_rating": 6.2
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Animation",
+      "rated_movies": 172,
+      "median_popularity": 37.2971165,
+      "median_rating": 6.5
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Comedy",
+      "rated_movies": 1083,
+      "median_popularity": 19.237254,
+      "median_rating": 6.1
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Crime",
+      "rated_movies": 511,
+      "median_popularity": 22.620125,
+      "median_rating": 6.4
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Documentary",
+      "rated_movies": 20,
+      "median_popularity": 13.41393,
+      "median_rating": 7.25
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Drama",
+      "rated_movies": 1283,
+      "median_popularity": 20.267062,
+      "median_rating": 6.7
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Family",
+      "rated_movies": 359,
+      "median_popularity": 26.548594,
+      "median_rating": 6.2
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Fantasy",
+      "rated_movies": 348,
+      "median_popularity": 33.763808499999996,
+      "median_rating": 6.2
+    },
+    {
+      "language_name": "English",
+      "genre_name": "History",
+      "rated_movies": 106,
+      "median_popularity": 21.7616075,
+      "median_rating": 6.85
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Horror",
+      "rated_movies": 372,
+      "median_popularity": 19.173288999999997,
+      "median_rating": 5.9
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Music",
+      "rated_movies": 91,
+      "median_popularity": 18.492655,
+      "median_rating": 6.6
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Mystery",
+      "rated_movies": 265,
+      "median_popularity": 23.917982,
+      "median_rating": 6.3
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Romance",
+      "rated_movies": 515,
+      "median_popularity": 19.143321,
+      "median_rating": 6.5
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Science Fiction",
+      "rated_movies": 426,
+      "median_popularity": 28.441561999999998,
+      "median_rating": 6.2
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Thriller",
+      "rated_movies": 940,
+      "median_popularity": 23.358815999999997,
+      "median_rating": 6.2
+    },
+    {
+      "language_name": "English",
+      "genre_name": "TV Movie",
+      "rated_movies": 3,
+      "median_popularity": 16.536374,
+      "median_rating": 6.1
+    },
+    {
+      "language_name": "English",
+      "genre_name": "War",
+      "rated_movies": 83,
+      "median_popularity": 29.381878,
+      "median_rating": 7.0
+    },
+    {
+      "language_name": "English",
+      "genre_name": "Western",
+      "rated_movies": 44,
+      "median_popularity": 18.856099,
+      "median_rating": 6.800000000000001
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Action",
+      "rated_movies": 4,
+      "median_popularity": 17.8516525,
+      "median_rating": 6.35
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Adventure",
+      "rated_movies": 5,
+      "median_popularity": 17.375562,
+      "median_rating": 6.2
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Animation",
+      "rated_movies": 6,
+      "median_popularity": 12.523923499999999,
+      "median_rating": 6.9
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Comedy",
+      "rated_movies": 18,
+      "median_popularity": 13.4896235,
+      "median_rating": 6.8
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Crime",
+      "rated_movies": 3,
+      "median_popularity": 8.204829,
+      "median_rating": 6.9
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Documentary",
+      "rated_movies": 1,
+      "median_popularity": 17.537154,
+      "median_rating": 6.9
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Drama",
+      "rated_movies": 22,
+      "median_popularity": 14.658862,
+      "median_rating": 7.15
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Family",
+      "rated_movies": 5,
+      "median_popularity": 17.375562,
+      "median_rating": 6.5
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Fantasy",
+      "rated_movies": 4,
+      "median_popularity": 14.829293499999999,
+      "median_rating": 6.15
+    },
+    {
+      "language_name": "French",
+      "genre_name": "History",
+      "rated_movies": 3,
+      "median_popularity": 13.960945,
+      "median_rating": 6.6
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Horror",
+      "rated_movies": 1,
+      "median_popularity": 4.952983,
+      "median_rating": 6.6
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Music",
+      "rated_movies": 3,
+      "median_popularity": 13.960945,
+      "median_rating": 7.0
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Mystery",
+      "rated_movies": 4,
+      "median_popularity": 14.7450175,
+      "median_rating": 7.0
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Romance",
+      "rated_movies": 7,
+      "median_popularity": 13.960945,
+      "median_rating": 7.0
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Science Fiction",
+      "rated_movies": 2,
+      "median_popularity": 13.1937055,
+      "median_rating": 6.8
+    },
+    {
+      "language_name": "French",
+      "genre_name": "Thriller",
+      "rated_movies": 5,
+      "median_popularity": 8.204829,
+      "median_rating": 6.9
+    },
+    {
+      "language_name": "French",
+      "genre_name": "War",
+      "rated_movies": 4,
+      "median_popularity": 17.5227435,
+      "median_rating": 7.2
+    },
+    {
+      "language_name": "German",
+      "genre_name": "Action",
+      "rated_movies": 3,
+      "median_popularity": 26.967494,
+      "median_rating": 7.2
+    },
+    {
+      "language_name": "German",
+      "genre_name": "Adventure",
+      "rated_movies": 1,
+      "median_popularity": 26.967494,
+      "median_rating": 7.9
+    },
+    {
+      "language_name": "German",
+      "genre_name": "Comedy",
+      "rated_movies": 2,
+      "median_popularity": 8.273744,
+      "median_rating": 7.25
+    },
+    {
+      "language_name": "German",
+      "genre_name": "Crime",
+      "rated_movies": 2,
+      "median_popularity": 12.8372125,
+      "median_rating": 7.15
+    },
+    {
+      "language_name": "German",
+      "genre_name": "Drama",
+      "rated_movies": 10,
+      "median_popularity": 26.124345499999997,
+      "median_rating": 7.45
+    },
+    {
+      "language_name": "German",
+      "genre_name": "History",
+      "rated_movies": 3,
+      "median_popularity": 26.967494,
+      "median_rating": 7.7
+    },
+    {
+      "language_name": "German",
+      "genre_name": "Mystery",
+      "rated_movies": 2,
+      "median_popularity": 14.044804,
+      "median_rating": 6.550000000000001
+    },
+    {
+      "language_name": "German",
+      "genre_name": "Romance",
+      "rated_movies": 1,
+      "median_popularity": 11.086001,
+      "median_rating": 7.4
+    },
+    {
+      "language_name": "German",
+      "genre_name": "Science Fiction",
+      "rated_movies": 2,
+      "median_popularity": 21.2468725,
+      "median_rating": 6.95
+    },
+    {
+      "language_name": "German",
+      "genre_name": "Thriller",
+      "rated_movies": 5,
+      "median_popularity": 25.281197,
+      "median_rating": 7.2
+    },
+    {
+      "language_name": "German",
+      "genre_name": "War",
+      "rated_movies": 2,
+      "median_popularity": 29.706694499999998,
+      "median_rating": 7.800000000000001
+    },
+    {
+      "language_name": "Greek",
+      "genre_name": "Drama",
+      "rated_movies": 1,
+      "median_popularity": 28.858238,
+      "median_rating": 6.9
+    },
+    {
+      "language_name": "Hebrew",
+      "genre_name": "Animation",
+      "rated_movies": 1,
+      "median_popularity": 14.08251,
+      "median_rating": 7.8
+    },
+    {
+      "language_name": "Hebrew",
+      "genre_name": "Drama",
+      "rated_movies": 1,
+      "median_popularity": 14.08251,
+      "median_rating": 7.8
+    },
+    {
+      "language_name": "Hebrew",
+      "genre_name": "War",
+      "rated_movies": 1,
+      "median_popularity": 14.08251,
+      "median_rating": 7.8
+    },
+    {
+      "language_name": "Hindi",
+      "genre_name": "Drama",
+      "rated_movies": 1,
+      "median_popularity": 14.017809,
+      "median_rating": 7.3
+    },
+    {
+      "language_name": "Hindi",
+      "genre_name": "Romance",
+      "rated_movies": 1,
+      "median_popularity": 14.017809,
+      "median_rating": 7.3
+    },
+    {
+      "language_name": "Indonesian",
+      "genre_name": "Action",
+      "rated_movies": 1,
+      "median_popularity": 40.285095,
+      "median_rating": 7.3
+    },
+    {
+      "language_name": "Indonesian",
+      "genre_name": "Crime",
+      "rated_movies": 1,
+      "median_popularity": 40.285095,
+      "median_rating": 7.3
+    },
+    {
+      "language_name": "Indonesian",
+      "genre_name": "Documentary",
+      "rated_movies": 1,
+      "median_popularity": 8.887411,
+      "median_rating": 7.5
+    },
+    {
+      "language_name": "Indonesian",
+      "genre_name": "Thriller",
+      "rated_movies": 1,
+      "median_popularity": 40.285095,
+      "median_rating": 7.3
+    },
+    {
+      "language_name": "Italian",
+      "genre_name": "Adventure",
+      "rated_movies": 1,
+      "median_popularity": 4.590277,
+      "median_rating": 6.0
+    },
+    {
+      "language_name": "Italian",
+      "genre_name": "Animation",
+      "rated_movies": 1,
+      "median_popularity": 4.590277,
+      "median_rating": 6.0
+    },
+    {
+      "language_name": "Italian",
+      "genre_name": "Comedy",
+      "rated_movies": 3,
+      "median_popularity": 7.720692,
+      "median_rating": 7.0
+    },
+    {
+      "language_name": "Italian",
+      "genre_name": "Drama",
+      "rated_movies": 3,
+      "median_popularity": 8.429295,
+      "median_rating": 7.3
+    },
+    {
+      "language_name": "Italian",
+      "genre_name": "Family",
+      "rated_movies": 1,
+      "median_popularity": 4.590277,
+      "median_rating": 6.0
+    },
+    {
+      "language_name": "Italian",
+      "genre_name": "Horror",
+      "rated_movies": 1,
+      "median_popularity": 8.022122,
+      "median_rating": 6.6
+    },
+    {
+      "language_name": "Italian",
+      "genre_name": "Romance",
+      "rated_movies": 1,
+      "median_popularity": 7.720692,
+      "median_rating": 7.0
+    },
+    {
+      "language_name": "Italian",
+      "genre_name": "Western",
+      "rated_movies": 3,
+      "median_popularity": 49.333137,
+      "median_rating": 8.1
+    },
+    {
+      "language_name": "Japanese",
+      "genre_name": "Action",
+      "rated_movies": 3,
+      "median_popularity": 9.476999,
+      "median_rating": 6.5
+    },
+    {
+      "language_name": "Japanese",
+      "genre_name": "Adventure",
+      "rated_movies": 5,
+      "median_popularity": 49.549984,
+      "median_rating": 8.2
+    },
+    {
+      "language_name": "Japanese",
+      "genre_name": "Animation",
+      "rated_movies": 8,
+      "median_popularity": 39.4624285,
+      "median_rating": 7.65
+    },
+    {
+      "language_name": "Japanese",
+      "genre_name": "Crime",
+      "rated_movies": 1,
+      "median_popularity": 5.327714,
+      "median_rating": 6.8
+    },
+    {
+      "language_name": "Japanese",
+      "genre_name": "Drama",
+      "rated_movies": 3,
+      "median_popularity": 9.476999,
+      "median_rating": 6.8
+    },
+    {
+      "language_name": "Japanese",
+      "genre_name": "Family",
+      "rated_movies": 3,
+      "median_popularity": 39.58676,
+      "median_rating": 7.5
+    },
+    {
+      "language_name": "Japanese",
+      "genre_name": "Fantasy",
+      "rated_movies": 5,
+      "median_popularity": 49.549984,
+      "median_rating": 8.2
+    },
+    {
+      "language_name": "Japanese",
+      "genre_name": "Horror",
+      "rated_movies": 1,
+      "median_popularity": 9.476999,
+      "median_rating": 6.5
+    },
+    {
+      "language_name": "Japanese",
+      "genre_name": "Science Fiction",
+      "rated_movies": 4,
+      "median_popularity": 12.101668499999999,
+      "median_rating": 6.5
+    },
+    {
+      "language_name": "Japanese",
+      "genre_name": "Thriller",
+      "rated_movies": 1,
+      "median_popularity": 5.327714,
+      "median_rating": 6.8
+    },
+    {
+      "language_name": "Korean",
+      "genre_name": "Action",
+      "rated_movies": 5,
+      "median_popularity": 11.847324,
+      "median_rating": 7.1
+    },
+    {
+      "language_name": "Korean",
+      "genre_name": "Adventure",
+      "rated_movies": 2,
+      "median_popularity": 10.7100145,
+      "median_rating": 7.25
+    },
+    {
+      "language_name": "Korean",
+      "genre_name": "Comedy",
+      "rated_movies": 1,
+      "median_popularity": 11.847324,
+      "median_rating": 7.1
+    },
+    {
+      "language_name": "Korean",
+      "genre_name": "Drama",
+      "rated_movies": 6,
+      "median_popularity": 22.3650565,
+      "median_rating": 7.050000000000001
+    },
+    {
+      "language_name": "Korean",
+      "genre_name": "Fantasy",
+      "rated_movies": 1,
+      "median_popularity": 4.822033,
+      "median_rating": 4.0
+    },
+    {
+      "language_name": "Korean",
+      "genre_name": "History",
+      "rated_movies": 1,
+      "median_popularity": 9.572705,
+      "median_rating": 7.4
+    },
+    {
+      "language_name": "Korean",
+      "genre_name": "Horror",
+      "rated_movies": 3,
+      "median_popularity": 9.05029,
+      "median_rating": 6.7
+    },
+    {
+      "language_name": "Korean",
+      "genre_name": "Mystery",
+      "rated_movies": 2,
+      "median_popularity": 32.906890000000004,
+      "median_rating": 7.6
+    },
+    {
+      "language_name": "Korean",
+      "genre_name": "Science Fiction",
+      "rated_movies": 3,
+      "median_popularity": 27.65527,
+      "median_rating": 6.7
+    },
+    {
+      "language_name": "Korean",
+      "genre_name": "Thriller",
+      "rated_movies": 3,
+      "median_popularity": 17.074843,
+      "median_rating": 7.4
+    },
+    {
+      "language_name": "Korean",
+      "genre_name": "War",
+      "rated_movies": 1,
+      "median_popularity": 9.572705,
+      "median_rating": 7.4
+    },
+    {
+      "language_name": "Korean",
+      "genre_name": "Western",
+      "rated_movies": 1,
+      "median_popularity": 11.847324,
+      "median_rating": 7.1
+    },
+    {
+      "language_name": "No linguistic content",
+      "genre_name": "Adventure",
+      "rated_movies": 1,
+      "median_popularity": 6.537986,
+      "median_rating": 7.1
+    },
+    {
+      "language_name": "No linguistic content",
+      "genre_name": "Drama",
+      "rated_movies": 1,
+      "median_popularity": 6.537986,
+      "median_rating": 7.1
+    },
+    {
+      "language_name": "Norwegian",
+      "genre_name": "Comedy",
+      "rated_movies": 1,
+      "median_popularity": 11.205726,
+      "median_rating": 6.1
+    },
+    {
+      "language_name": "Norwegian",
+      "genre_name": "Horror",
+      "rated_movies": 1,
+      "median_popularity": 11.205726,
+      "median_rating": 6.1
+    },
+    {
+      "language_name": "Norwegian Bokmal",
+      "genre_name": "Fantasy",
+      "rated_movies": 1,
+      "median_popularity": 12.982319,
+      "median_rating": 6.7
+    },
+    {
+      "language_name": "Norwegian Bokmal",
+      "genre_name": "Horror",
+      "rated_movies": 1,
+      "median_popularity": 12.982319,
+      "median_rating": 6.7
+    },
+    {
+      "language_name": "Persian",
+      "genre_name": "Comedy",
+      "rated_movies": 1,
+      "median_popularity": 7.072118,
+      "median_rating": 7.8
+    },
+    {
+      "language_name": "Persian",
+      "genre_name": "Drama",
+      "rated_movies": 2,
+      "median_popularity": 9.5607455,
+      "median_rating": 7.75
+    },
+    {
+      "language_name": "Persian",
+      "genre_name": "Family",
+      "rated_movies": 1,
+      "median_popularity": 7.072118,
+      "median_rating": 7.8
+    },
+    {
+      "language_name": "Polish",
+      "genre_name": "Drama",
+      "rated_movies": 1,
+      "median_popularity": 13.265432,
+      "median_rating": 7.1
+    },
+    {
+      "language_name": "Portuguese",
+      "genre_name": "Action",
+      "rated_movies": 1,
+      "median_popularity": 23.604936,
+      "median_rating": 7.8
+    },
+    {
+      "language_name": "Portuguese",
+      "genre_name": "Adventure",
+      "rated_movies": 1,
+      "median_popularity": 14.637357,
+      "median_rating": 7.1
+    },
+    {
+      "language_name": "Portuguese",
+      "genre_name": "Crime",
+      "rated_movies": 3,
+      "median_popularity": 23.604936,
+      "median_rating": 7.8
+    },
+    {
+      "language_name": "Portuguese",
+      "genre_name": "Drama",
+      "rated_movies": 5,
+      "median_popularity": 14.637357,
+      "median_rating": 7.8
+    },
+    {
+      "language_name": "Portuguese",
+      "genre_name": "Thriller",
+      "rated_movies": 1,
+      "median_popularity": 14.637357,
+      "median_rating": 7.1
+    },
+    {
+      "language_name": "Romanian",
+      "genre_name": "Drama",
+      "rated_movies": 1,
+      "median_popularity": 9.270133,
+      "median_rating": 7.3
+    },
+    {
+      "language_name": "Russian",
+      "genre_name": "Action",
+      "rated_movies": 1,
+      "median_popularity": 12.540624,
+      "median_rating": 6.3
+    },
+    {
+      "language_name": "Russian",
+      "genre_name": "Adventure",
+      "rated_movies": 1,
+      "median_popularity": 24.132271,
+      "median_rating": 7.7
+    },
+    {
+      "language_name": "Russian",
+      "genre_name": "Drama",
+      "rated_movies": 2,
+      "median_popularity": 15.9382185,
+      "median_rating": 7.550000000000001
+    },
+    {
+      "language_name": "Russian",
+      "genre_name": "Fantasy",
+      "rated_movies": 1,
+      "median_popularity": 12.540624,
+      "median_rating": 6.3
+    },
+    {
+      "language_name": "Russian",
+      "genre_name": "History",
+      "rated_movies": 1,
+      "median_popularity": 10.1449,
+      "median_rating": 6.5
+    },
+    {
+      "language_name": "Russian",
+      "genre_name": "Mystery",
+      "rated_movies": 2,
+      "median_popularity": 15.9382185,
+      "median_rating": 7.550000000000001
+    },
+    {
+      "language_name": "Russian",
+      "genre_name": "Science Fiction",
+      "rated_movies": 1,
+      "median_popularity": 24.132271,
+      "median_rating": 7.7
+    },
+    {
+      "language_name": "Russian",
+      "genre_name": "Thriller",
+      "rated_movies": 2,
+      "median_popularity": 10.142395,
+      "median_rating": 6.85
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Action",
+      "rated_movies": 2,
+      "median_popularity": 17.273416,
+      "median_rating": 6.199999999999999
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Adventure",
+      "rated_movies": 1,
+      "median_popularity": 14.866351,
+      "median_rating": 6.0
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Animation",
+      "rated_movies": 1,
+      "median_popularity": 14.866351,
+      "median_rating": 6.0
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Comedy",
+      "rated_movies": 4,
+      "median_popularity": 16.041818,
+      "median_rating": 6.55
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Crime",
+      "rated_movies": 5,
+      "median_popularity": 14.269792,
+      "median_rating": 6.9
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Drama",
+      "rated_movies": 12,
+      "median_popularity": 17.127012,
+      "median_rating": 7.3
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Family",
+      "rated_movies": 1,
+      "median_popularity": 12.335827,
+      "median_rating": 5.8
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Fantasy",
+      "rated_movies": 1,
+      "median_popularity": 90.809408,
+      "median_rating": 7.6
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Horror",
+      "rated_movies": 3,
+      "median_popularity": 29.071955,
+      "median_rating": 7.1
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Mystery",
+      "rated_movies": 2,
+      "median_popularity": 28.792841000000003,
+      "median_rating": 7.449999999999999
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Romance",
+      "rated_movies": 4,
+      "median_popularity": 18.319046999999998,
+      "median_rating": 7.3
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Science Fiction",
+      "rated_movies": 1,
+      "median_popularity": 19.02965,
+      "median_rating": 7.0
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Thriller",
+      "rated_movies": 8,
+      "median_popularity": 16.649721,
+      "median_rating": 7.0
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "War",
+      "rated_movies": 1,
+      "median_popularity": 90.809408,
+      "median_rating": 7.6
+    },
+    {
+      "language_name": "Spanish",
+      "genre_name": "Western",
+      "rated_movies": 1,
+      "median_popularity": 20.27704,
+      "median_rating": 5.8
+    },
+    {
+      "language_name": "Swedish",
+      "genre_name": "Crime",
+      "rated_movies": 1,
+      "median_popularity": 7.759215,
+      "median_rating": 7.7
+    },
+    {
+      "language_name": "Swedish",
+      "genre_name": "Drama",
+      "rated_movies": 2,
+      "median_popularity": 9.553535,
+      "median_rating": 7.75
+    },
+    {
+      "language_name": "Telugu",
+      "genre_name": "Action",
+      "rated_movies": 1,
+      "median_popularity": 16.254032,
+      "median_rating": 7.5
+    },
+    {
+      "language_name": "Telugu",
+      "genre_name": "Adventure",
+      "rated_movies": 1,
+      "median_popularity": 16.254032,
+      "median_rating": 7.5
+    },
+    {
+      "language_name": "Telugu",
+      "genre_name": "History",
+      "rated_movies": 1,
+      "median_popularity": 16.254032,
+      "median_rating": 7.5
+    },
+    {
+      "language_name": "Telugu",
+      "genre_name": "War",
+      "rated_movies": 1,
+      "median_popularity": 16.254032,
+      "median_rating": 7.5
+    },
+    {
+      "language_name": "Thai",
+      "genre_name": "Action",
+      "rated_movies": 2,
+      "median_popularity": 10.423904499999999,
+      "median_rating": 6.4
+    },
+    {
+      "language_name": "Thai",
+      "genre_name": "Adventure",
+      "rated_movies": 1,
+      "median_popularity": 9.029489,
+      "median_rating": 6.0
+    },
+    {
+      "language_name": "Thai",
+      "genre_name": "Crime",
+      "rated_movies": 1,
+      "median_popularity": 11.81832,
+      "median_rating": 6.8
+    },
+    {
+      "language_name": "Thai",
+      "genre_name": "Drama",
+      "rated_movies": 1,
+      "median_popularity": 11.81832,
+      "median_rating": 6.8
+    },
+    {
+      "language_name": "Thai",
+      "genre_name": "Thriller",
+      "rated_movies": 2,
+      "median_popularity": 10.423904499999999,
+      "median_rating": 6.4
+    }
+  ]
+}

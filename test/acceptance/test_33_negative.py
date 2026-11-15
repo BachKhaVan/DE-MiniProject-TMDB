@@ -27,7 +27,7 @@ def test_negative_controls(case_id,request):
     try:import psycopg
     except ImportError:blocked('Chưa cài psycopg')
     if not cfg['password']:blocked('Thiếu isolated secret')
-    try:con=psycopg.connect(**cfg,connect_timeout=5)
+    try:con=psycopg.connect(**cfg,connect_timeout=5,options='-c lock_timeout=5000 -c statement_timeout=60000')
     except Exception:blocked('Không kết nối được DB isolated')
     try:
         got=con.execute('SELECT current_database()').fetchone()[0]
@@ -76,6 +76,7 @@ def test_negative_controls(case_id,request):
                             'after_injected_violations':after,'sample':samples},
                    note='Negative control; transaction rollback in finally')
             assert after>before,f'Assertion {CASES[case_id][1]} không phát hiện lỗi tiêm vào ({before} → {after})'
+        except AssertionError:raise
         except Blocked as e:blocked(str(e))
         except Exception as e:
             blocked('Không inject được dữ liệu vì ràng buộc/thiếu bảng: '+type(e).__name__)

@@ -3,7 +3,14 @@ import os, pytest
 from core import connect_readonly,Blocked
 
 @pytest.fixture(scope='session')
-def ro_db():
+def db_ready():
+    # Cache unavailable prerequisites once; do not retry an offline server for every SQL case.
+    try:conn=connect_readonly()
+    except Blocked as e:pytest.skip('BLOCKED: '+str(e))
+    conn.close()
+
+@pytest.fixture
+def ro_db(db_ready):
     try: conn=connect_readonly()
     except Blocked as e: pytest.skip('BLOCKED: '+str(e))
     try: yield conn

@@ -1,0 +1,132 @@
+{
+  "id": "Q5SQL",
+  "query": "\nWITH groups AS (\n SELECT c.company_name,count(DISTINCT f.movie_sk) AS valid_movies,\n sum(f.profit*bg.weight_factor) AS weighted_profit,sum(f.profit) AS full_profit\n FROM dds.fact_movie f JOIN dds.bridge_movie_company bg USING(movie_sk)\n JOIN dds.dim_company c USING(company_sk)\n WHERE f.is_finance_valid=1 GROUP BY c.company_name\n)\nSELECT * FROM groups WHERE valid_movies>=5 ORDER BY weighted_profit DESC NULLS LAST,company_name LIMIT 20",
+  "column_names": [
+    "company_name",
+    "valid_movies",
+    "weighted_profit",
+    "full_profit"
+  ],
+  "rows": [
+    {
+      "company_name": "Paramount Pictures",
+      "valid_movies": 245,
+      "weighted_profit": "10928177432.6972330126",
+      "full_profit": "27748862805"
+    },
+    {
+      "company_name": "Universal Pictures",
+      "valid_movies": 273,
+      "weighted_profit": "10374951894.1988289844",
+      "full_profit": "29509237061"
+    },
+    {
+      "company_name": "Warner Bros.",
+      "valid_movies": 280,
+      "weighted_profit": "9660550129.0395710841",
+      "full_profit": "30938380614"
+    },
+    {
+      "company_name": "Twentieth Century Fox Film Corporation",
+      "valid_movies": 201,
+      "weighted_profit": "9434182190.6842137858",
+      "full_profit": "28642711776"
+    },
+    {
+      "company_name": "Walt Disney Pictures",
+      "valid_movies": 96,
+      "weighted_profit": "8444901487.5892091283",
+      "full_profit": "19266982158"
+    },
+    {
+      "company_name": "Columbia Pictures",
+      "valid_movies": 167,
+      "weighted_profit": "6862093615.1617417835",
+      "full_profit": "17971759867"
+    },
+    {
+      "company_name": "DreamWorks Animation",
+      "valid_movies": 31,
+      "weighted_profit": "5964348052.1658855045",
+      "full_profit": "9085011861"
+    },
+    {
+      "company_name": "Marvel Studios",
+      "valid_movies": 13,
+      "weighted_profit": "5182928472.3791532102",
+      "full_profit": "7768400680"
+    },
+    {
+      "company_name": "New Line Cinema",
+      "valid_movies": 142,
+      "weighted_profit": "5000763213.0109750884",
+      "full_profit": "13593525592"
+    },
+    {
+      "company_name": "Pixar Animation Studios",
+      "valid_movies": 16,
+      "weighted_profit": "4776188843.9886229380",
+      "full_profit": "7508792788"
+    },
+    {
+      "company_name": "Lucasfilm",
+      "valid_movies": 14,
+      "weighted_profit": "3897027781.4980190823",
+      "full_profit": "5810309700"
+    },
+    {
+      "company_name": "Amblin Entertainment",
+      "valid_movies": 47,
+      "weighted_profit": "3596092271.4722603167",
+      "full_profit": "12605035147"
+    },
+    {
+      "company_name": "DreamWorks SKG",
+      "valid_movies": 67,
+      "weighted_profit": "2796564203.6503601714",
+      "full_profit": "10032033626"
+    },
+    {
+      "company_name": "Eon Productions",
+      "valid_movies": 22,
+      "weighted_profit": "2431311563.2916863888",
+      "full_profit": "3869339899"
+    },
+    {
+      "company_name": "Touchstone Pictures",
+      "valid_movies": 93,
+      "weighted_profit": "2352710145.5330990236",
+      "full_profit": "5928998765"
+    },
+    {
+      "company_name": "Metro-Goldwyn-Mayer (MGM)",
+      "valid_movies": 92,
+      "weighted_profit": "2071088820.6812497289",
+      "full_profit": "6106230207"
+    },
+    {
+      "company_name": "Dune Entertainment",
+      "valid_movies": 54,
+      "weighted_profit": "2059240626.3653134239",
+      "full_profit": "9728281204"
+    },
+    {
+      "company_name": "Columbia Pictures Corporation",
+      "valid_movies": 86,
+      "weighted_profit": "1959980868.6745915722",
+      "full_profit": "5424132526"
+    },
+    {
+      "company_name": "Twentieth Century Fox Animation",
+      "valid_movies": 11,
+      "weighted_profit": "1896739823.9841646110",
+      "full_profit": "3975552091"
+    },
+    {
+      "company_name": "Blue Sky Studios",
+      "valid_movies": 9,
+      "weighted_profit": "1834612369.4891914288",
+      "full_profit": "3777310451"
+    }
+  ]
+}

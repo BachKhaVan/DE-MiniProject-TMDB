@@ -1,0 +1,135 @@
+{
+  "before": {
+    "dds": {
+      "fact_movie": {
+        "rows": 4803,
+        "sha256": "89e4d84aa2997452d3eae151d1746a055f86bfb2792aa4bd3f59fcbdd08c6f2a"
+      },
+      "dim_movie": {
+        "rows": 4803,
+        "sha256": "5b6ee4f52af172e1fc3fb018d7e0ac910ed3cb845d5969fc102ff1436fcd156c"
+      },
+      "dim_date": {
+        "rows": 36679,
+        "sha256": "198538e3ecad9f946f00a82df0a509ceea45dc287e7fbf6feedc01054bd76baf"
+      },
+      "dim_language": {
+        "rows": 38,
+        "sha256": "368a981385d91f8c1917ec5e4b4167f925a07c611666f9e88da3811caa90911b"
+      },
+      "dim_genre": {
+        "rows": 21,
+        "sha256": "1b65c259b04aff160c7b7e406d0e5fc7997f8834ff5a71edbdc9299f73eb9f97"
+      },
+      "dim_company": {
+        "rows": 5048,
+        "sha256": "cef7670c900bf21b804162f3c4dde26b98510ba201478718d249bd9946eddade"
+      },
+      "dim_country": {
+        "rows": 89,
+        "sha256": "449f386753a6a4af29413e276c10476fe48fae5f1f7fde898b75156fbf339463"
+      },
+      "dim_keyword": {
+        "rows": 9814,
+        "sha256": "fb116c68c5c2f8b781d1d5e47ba049c9612d5983df4bd16a7032de8f141af5d0"
+      },
+      "bridge_movie_genre": {
+        "rows": 12188,
+        "sha256": "849868cb15771877eafc0b5478b42ca3bac29a091997a4672597a342366b47be"
+      },
+      "bridge_movie_company": {
+        "rows": 14028,
+        "sha256": "b7810cf44879d063d6410014913cae96768dbe47147ed743ab3186708ed80f58"
+      },
+      "bridge_movie_country": {
+        "rows": 6610,
+        "sha256": "57321f214f035c85a6d63fcd4928b69fe9f2366e9fb7b41464584d3037ceb203"
+      },
+      "bridge_movie_keyword": {
+        "rows": 36194,
+        "sha256": "d36571133369521a44b5ff52386f5beb52e5123f1f8fcfdfc6f3b69b6fc995dd"
+      }
+    },
+    "source": {
+      "timestamp_utc": "2026-11-15T17:22:23.755530+00:00",
+      "stg_tmdb_movies": {
+        "rows": 4803,
+        "sha256": "5f8553b85b81f4a1e8c63f3ba6ada5742c8fc5a33924f527d3e0470f82b84ede",
+        "duplicate_keys": 0
+      },
+      "stg_tmdb_credits": {
+        "rows": 4803,
+        "sha256": "3a31f438888304aa9ece9951716a1f1184eafab1db90fb28411298c9985c543c",
+        "duplicate_keys": 0
+      },
+      "watermark": "2000-01-01 00:00:00+00"
+    }
+  },
+  "after": {
+    "dds": {
+      "fact_movie": {
+        "rows": 4803,
+        "sha256": "89e4d84aa2997452d3eae151d1746a055f86bfb2792aa4bd3f59fcbdd08c6f2a"
+      },
+      "dim_movie": {
+        "rows": 4803,
+        "sha256": "5b6ee4f52af172e1fc3fb018d7e0ac910ed3cb845d5969fc102ff1436fcd156c"
+      },
+      "dim_date": {
+        "rows": 36679,
+        "sha256": "198538e3ecad9f946f00a82df0a509ceea45dc287e7fbf6feedc01054bd76baf"
+      },
+      "dim_language": {
+        "rows": 38,
+        "sha256": "368a981385d91f8c1917ec5e4b4167f925a07c611666f9e88da3811caa90911b"
+      },
+      "dim_genre": {
+        "rows": 21,
+        "sha256": "1b65c259b04aff160c7b7e406d0e5fc7997f8834ff5a71edbdc9299f73eb9f97"
+      },
+      "dim_company": {
+        "rows": 5048,
+        "sha256": "cef7670c900bf21b804162f3c4dde26b98510ba201478718d249bd9946eddade"
+      },
+      "dim_country": {
+        "rows": 89,
+        "sha256": "449f386753a6a4af29413e276c10476fe48fae5f1f7fde898b75156fbf339463"
+      },
+      "dim_keyword": {
+        "rows": 9814,
+        "sha256": "fb116c68c5c2f8b781d1d5e47ba049c9612d5983df4bd16a7032de8f141af5d0"
+      },
+      "bridge_movie_genre": {
+        "rows": 12188,
+        "sha256": "849868cb15771877eafc0b5478b42ca3bac29a091997a4672597a342366b47be"
+      },
+      "bridge_movie_company": {
+        "rows": 14028,
+        "sha256": "b7810cf44879d063d6410014913cae96768dbe47147ed743ab3186708ed80f58"
+      },
+      "bridge_movie_country": {
+        "rows": 6610,
+        "sha256": "57321f214f035c85a6d63fcd4928b69fe9f2366e9fb7b41464584d3037ceb203"
+      },
+      "bridge_movie_keyword": {
+        "rows": 36194,
+        "sha256": "d36571133369521a44b5ff52386f5beb52e5123f1f8fcfdfc6f3b69b6fc995dd"
+      }
+    },
+    "source": {
+      "timestamp_utc": "2026-11-15T17:23:22.439058+00:00",
+      "stg_tmdb_movies": {
+        "rows": 4803,
+        "sha256": "5f8553b85b81f4a1e8c63f3ba6ada5742c8fc5a33924f527d3e0470f82b84ede",
+        "duplicate_keys": 0
+      },
+      "stg_tmdb_credits": {
+        "rows": 4803,
+        "sha256": "3a31f438888304aa9ece9951716a1f1184eafab1db90fb28411298c9985c543c",
+        "duplicate_keys": 0
+      },
+      "watermark": "2000-01-01 00:00:00+00"
+    }
+  },
+  "fingerprint": "c1c5c80fa7ae9e72adb4507bd5f34a6c12d5f7fe075e450c5071781b61db34b4"
+}

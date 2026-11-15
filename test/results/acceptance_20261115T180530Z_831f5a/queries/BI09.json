@@ -1,0 +1,153 @@
+{
+  "id": "BI09",
+  "query": "\nSELECT c.company_name,count(DISTINCT f.movie_sk) AS valid_movies,\n sum(f.revenue*b.weight_factor) AS weighted_revenue,\n sum(f.revenue) AS full_revenue,\n percentile_cont(0.5) WITHIN GROUP(ORDER BY f.roi::float8) AS roi_median\nFROM dds.fact_movie f JOIN dds.bridge_movie_company b USING(movie_sk)\nJOIN dds.dim_company c USING(company_sk)\nWHERE f.is_finance_valid=1\nGROUP BY c.company_name HAVING count(DISTINCT f.movie_sk)>=5\nORDER BY weighted_revenue DESC NULLS LAST,c.company_name LIMIT 20",
+  "column_names": [
+    "company_name",
+    "valid_movies",
+    "weighted_revenue",
+    "full_revenue",
+    "roi_median"
+  ],
+  "rows": [
+    {
+      "company_name": "Paramount Pictures",
+      "valid_movies": 245,
+      "weighted_revenue": "15421558711.7065827800",
+      "full_revenue": "40514725812",
+      "roi_median": 1.5864
+    },
+    {
+      "company_name": "Warner Bros.",
+      "valid_movies": 280,
+      "weighted_revenue": "14952237091.6606310841",
+      "full_revenue": "48822074563",
+      "roi_median": 1.13635
+    },
+    {
+      "company_name": "Universal Pictures",
+      "valid_movies": 273,
+      "weighted_revenue": "14682666417.7051267312",
+      "full_revenue": "42394603334",
+      "roi_median": 1.7105
+    },
+    {
+      "company_name": "Walt Disney Pictures",
+      "valid_movies": 96,
+      "weighted_revenue": "12669098154.1983091283",
+      "full_revenue": "28515762158",
+      "roi_median": 1.6470500000000001
+    },
+    {
+      "company_name": "Twentieth Century Fox Film Corporation",
+      "valid_movies": 201,
+      "weighted_revenue": "12522084196.4740432858",
+      "full_revenue": "39136501776",
+      "roi_median": 1.9915
+    },
+    {
+      "company_name": "Columbia Pictures",
+      "valid_movies": 167,
+      "weighted_revenue": "10838857831.6414717835",
+      "full_revenue": "28526534603",
+      "roi_median": 1.4929
+    },
+    {
+      "company_name": "DreamWorks Animation",
+      "valid_movies": 31,
+      "weighted_revenue": "8417098052.1413855045",
+      "full_revenue": "12751011861",
+      "roi_median": 2.5943
+    },
+    {
+      "company_name": "New Line Cinema",
+      "valid_movies": 142,
+      "weighted_revenue": "7339241427.2717750884",
+      "full_revenue": "19399010592",
+      "roi_median": 1.71535
+    },
+    {
+      "company_name": "Marvel Studios",
+      "valid_movies": 13,
+      "weighted_revenue": "6816261805.7031532102",
+      "full_revenue": "10138400680",
+      "roi_median": 3.1798
+    },
+    {
+      "company_name": "Pixar Animation Studios",
+      "valid_movies": 16,
+      "weighted_revenue": "6091188843.9826229380",
+      "full_revenue": "9809792788",
+      "roi_median": 3.1794000000000002
+    },
+    {
+      "company_name": "Amblin Entertainment",
+      "valid_movies": 47,
+      "weighted_revenue": "4522975604.8122703167",
+      "full_revenue": "16090835147",
+      "roi_median": 3.2353
+    },
+    {
+      "company_name": "Lucasfilm",
+      "valid_movies": 14,
+      "weighted_revenue": "4455345114.8298031823",
+      "full_revenue": "6606736700",
+      "roi_median": 7.95805
+    },
+    {
+      "company_name": "DreamWorks SKG",
+      "valid_movies": 67,
+      "weighted_revenue": "4111517378.2448101714",
+      "full_revenue": "14384533626",
+      "roi_median": 1.489
+    },
+    {
+      "company_name": "Touchstone Pictures",
+      "valid_movies": 93,
+      "weighted_revenue": "4099079688.9534990236",
+      "full_revenue": "10302483288",
+      "roi_median": 0.8996
+    },
+    {
+      "company_name": "Columbia Pictures Corporation",
+      "valid_movies": 86,
+      "weighted_revenue": "3476061821.0324815722",
+      "full_revenue": "9308907526",
+      "roi_median": 1.2222499999999998
+    },
+    {
+      "company_name": "Metro-Goldwyn-Mayer (MGM)",
+      "valid_movies": 92,
+      "weighted_revenue": "3341743712.4943197289",
+      "full_revenue": "9968550575",
+      "roi_median": 1.12295
+    },
+    {
+      "company_name": "Eon Productions",
+      "valid_movies": 22,
+      "weighted_revenue": "3196436563.2851463888",
+      "full_revenue": "4915989899",
+      "roi_median": 5.896850000000001
+    },
+    {
+      "company_name": "Relativity Media",
+      "valid_movies": 100,
+      "weighted_revenue": "3105030357.8061980044",
+      "full_revenue": "12761011694",
+      "roi_median": 1.2052
+    },
+    {
+      "company_name": "Dune Entertainment",
+      "valid_movies": 54,
+      "weighted_revenue": "2828861298.1332134239",
+      "full_revenue": "13634281207",
+      "roi_median": 1.6441
+    },
+    {
+      "company_name": "Village Roadshow Pictures",
+      "valid_movies": 73,
+      "weighted_revenue": "2800826576.1206838757",
+      "full_revenue": "13446581654",
+      "roi_median": 0.9529
+    }
+  ]
+}

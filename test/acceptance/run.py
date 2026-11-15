@@ -4,8 +4,9 @@ from __future__ import annotations
 import argparse,datetime,html,json,os,re,shutil,subprocess,sys,uuid,xml.etree.ElementTree as ET
 from collections import Counter
 from pathlib import Path
-from core import ROOT,HERE,CASES,db_config,Blocked,connect_readonly
+from core import ROOT,HERE,CASES,db_config,Blocked,connect_readonly,dbt_executable,load_connection_env
 import sql_checks,bi_queries,test_31_mage,test_32_dbt,test_34_powerbi,test_31_scenarios,test_33_negative
+import test_31_cleaners,test_35_ai
 
 BASE=ROOT/'test'/'results'
 
@@ -83,6 +84,8 @@ def read_junit(path,clean):
     for el in tree.iter('testcase'):
         name=el.get('name','');m=re.search(r'\[([A-Z]{1,3}\d{2})\]',name)
         id=m.group(1) if m else name
+        bracket=re.search(r'\[([^\]]+)\]$',name)
+        if bracket and bracket.group(1) in CASES:id=bracket.group(1)
         prop={x.get('name'):x.get('value') for x in el.findall('./properties/property')}
         failure=el.find('failure');error=el.find('error');skipped=el.find('skipped')
         msg=''
@@ -91,7 +94,7 @@ def read_junit(path,clean):
             status='FAIL';msg=clean((obj.get('message') or obj.text or '')[:1400])
         elif skipped is not None:
             msg=clean((skipped.get('message') or skipped.text or '')[:1400]);status='BLOCKED' if 'BLOCKED:' in msg else 'SKIPPED'
-        else: status='PASS'
+        else: status='INFO' if CASES.get(id,{}).get('observation') else 'PASS'
         try:actual=json.loads(prop.get('actual','null'))
         except ValueError:actual=prop.get('actual')
         out.append({'id':id,'name':name,'status':status,'actual':actual,'message':msg,
@@ -104,7 +107,8 @@ def render_markdown(report):
          f"- Run ID: `{report['run_id']}`",f"- UTC: `{report['timestamp_utc']}`",
          f"- Mode: **{report['mode']}**; Section: **{report['section']}**",
          f"- Branch/commit: `{report['git']['branch'] or 'n/a'}` / `{report['git']['commit'] or 'n/a'}`; dirty={report['git']['dirty']}",
-         f"- **PASS {count.get('PASS',0)} / FAIL {count.get('FAIL',0)} / BLOCKED {count.get('BLOCKED',0)} / SKIPPED {count.get('SKIPPED',0)}**",'',
+         f"- **PASS {count.get('PASS',0)} / FAIL {count.get('FAIL',0)} / BLOCKED {count.get('BLOCKED',0)} / SKIPPED {count.get('SKIPPED',0)} / INFO {count.get('INFO',0)}**",'',
+         'INFO là số liệu quan sát hoặc SQL tham chiếu; không tính là nghiệm thu đạt.', '',
          '## Bảng toàn bộ test (requirement → evidence → kết luận)','',
          '| Test ID | Mục | Loại | Tên | Kết quả | Bằng chứng |', '|---|---|---|---|---|---|']
     for r in rows:
@@ -123,23 +127,31 @@ def render_markdown(report):
           '- Kết quả tĩnh chỉ chứng minh nội dung các file trong repository; không chứng minh runtime đã chạy.',
           '- Các hiện tượng Power BI chưa truy vấn được DAX expression / refresh trực tiếp được ghi BLOCKED.',
           '- Kết quả từ `dbt_transform/target/` là artifacts cũ, không phải lần build mới.',
-          '- Đây không phải kết luận tổng thể thành công khi còn BLOCKED.', '',
+          '- Đây không phải kết luận tổng thể thành công khi còn BLOCKED.',
+          '- Mục 3.5 là yêu cầu của đề nhưng chưa triển khai; AI01–AI04 luôn BLOCKED cho tới khi có implementation và adapter kiểm thử.',
+          '- Unit test cleaner không thay thế thực thi Mage; SQL reference INFO không chứng minh DAX đúng.', '',
           '## Môi trường và snapshot (không chứa credentials)','',
           '```json',json.dumps({'versions':report['versions'],'sources':report['sources'],'target':report['db_target'],'db_snapshot':report.get('db_snapshot')},ensure_ascii=False,indent=2),'```','']
     return '\n'.join(out)
 
 def main(argv=None):
     ap=argparse.ArgumentParser(description='TMDB acceptance test: pytest + JSON/MD evidence')
-    ap.add_argument('--section',default='all',choices=('all','31','32','33','34'))
+    ap.add_argument('--section',default='all',choices=('all','31','32','33','34','35'))
     ap.add_argument('--mode',default='readonly',choices=('readonly','integration'))
     ap.add_argument('--approved',action='store_true',help='Chỉ với DB isolated ở localhost:55432')
+    ap.add_argument('--snapshot',choices=('unknown','full'),default='unknown',help='full: bạn xác nhận stage là Full Load, chưa append batch')
+    ap.add_argument('--env-file',type=Path,help='Đọc cấu hình readonly từ .env được chỉ định; không in mật khẩu')
     args=ap.parse_args(argv)
+    if args.env_file:
+        if not args.env_file.is_file():ap.error('Không tìm thấy --env-file')
+        load_connection_env(args.env_file)
     if args.mode=='integration' and not args.approved:
         print('BLOCKED: integration cần --approved và DB cô lập, không dùng database chính',file=sys.stderr);return 2
     runid=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'_'+uuid.uuid4().hex[:6]
     run=BASE/('acceptance_'+runid);run.mkdir(parents=True,exist_ok=False)
     env=os.environ.copy();env['TMDB_TEST_MODE']=args.mode
     env['TMDB_TEST_EVIDENCE_DIR']=str(run)
+    env['TMDB_STAGE_SNAPSHOT']=args.snapshot
     if args.mode=='integration':
         env['TMDB_TEST_APPROVED']='I_UNDERSTAND_ISOLATED_WRITES'
         # Load password only from generated runtime env; never echo it.
@@ -150,10 +162,30 @@ def main(argv=None):
         data=json.loads(pwfile.read_text(encoding='utf8'))
         env['TMDB_TEST_DB_PASSWORD']=data['password'];env['TMDB_TEST_DB_USER']='tmdb_test_user'
         env['TMDB_TEST_DB_PORT']='55432';env['TMDB_TEST_DB_NAME']='tmdb_test_warehouse';env['TMDB_TEST_DB_HOST']='127.0.0.1'
+        # Freeze only evidence, never profiles/isolated.json (they contain secrets).
+        evidence=run/'runtime_evidence';evidence.mkdir()
+        runtime=HERE/'.runtime'
+        paths=[runtime/name for name in ('dbt_build_provenance.json','dbt_build_run_results.json','dbt_rebuild_comparison.json')]
+        paths += [runtime/'dbt_target'/name for name in ('manifest.json','catalog.json','index.html')]
+        paths += list((runtime/'scenarios').glob('*.json'))+list((runtime/'scenarios').glob('*_mage.log'))
+        for source in paths:
+            if source.is_file():
+                destination=evidence/source.relative_to(runtime)
+                destination.parent.mkdir(parents=True,exist_ok=True)
+                shutil.copy2(source,destination)
+        env['TMDB_RUNTIME_EVIDENCE_DIR']=str(evidence)
     selected=[str(x) for x in sorted(HERE.glob(f'test_{args.section}_*.py' if args.section!='all' else 'test_*.py'))]
     cmd=[sys.executable,'-m','pytest','-c',str(HERE/'pytest.ini'),*selected,'--junitxml',str(run/'junit.xml'),'-q']
     proc=subprocess.run(cmd,cwd=HERE,env=env,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-    clean=redactor();stdout=clean(proc.stdout)
+    clean_base=redactor()
+    secret=env.get('TMDB_TEST_DB_PASSWORD','')
+    def clean(value):
+        value=clean_base(value)
+        return value.replace(secret,'[REDACTED]') if secret else value
+    stdout=clean(proc.stdout)
+    if (run/'junit.xml').exists():
+        xmlpath=run/'junit.xml'
+        xmlpath.write_text(clean(xmlpath.read_text(encoding='utf8')),encoding='utf8')
     if args.mode=='integration':
         isolated=json.loads((HERE/'.runtime'/'isolated.json').read_text())['password']
         stdout=stdout.replace(isolated,'[REDACTED]')
@@ -194,7 +226,7 @@ def main(argv=None):
       'mode':args.mode,'section':args.section,'git':gitmeta(),'counts':counts,'checks':results,
       'sources':data_source_meta(),'db_target':target(),'db_snapshot':db_snapshot_meta(env),
       'versions':{'python':sys.version.split()[0],'pytest':cli_version([sys.executable,'-m','pytest','--version']),
-       'dbt':cli_version(['dbt','--version']),'docker':cli_version(['docker','--version']),
+       'dbt':cli_version([dbt_executable() or 'dbt','--version']),'docker':cli_version(['docker','--version']),
        'compose':cli_version(['docker','compose','version']),'mage':cli_version(['mage','--version']),
        'powerbi_desktop':'Không thể kiểm tra từ môi trường CLI này'},
       'limitations':['Không có kết nối Desktop semantic model trong CLI; DAX/Refresh cần kiểm tra thủ công.',
@@ -203,7 +235,7 @@ def main(argv=None):
     (run/'REPORT.md').write_text(render_markdown(report),encoding='utf8')
     exitcode=1 if counts.get('FAIL',0) else 2 if (counts.get('BLOCKED',0) or counts.get('SKIPPED',0)) else 0
     print(f"Run: {run.relative_to(ROOT)}")
-    print(' | '.join(f'{k}={counts.get(k,0)}' for k in ('PASS','FAIL','BLOCKED','SKIPPED')))
+    print(' | '.join(f'{k}={counts.get(k,0)}' for k in ('PASS','FAIL','BLOCKED','SKIPPED','INFO')))
     print('Exit code',exitcode)
     return exitcode
 

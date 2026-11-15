@@ -270,7 +270,7 @@ models:
                 to: ref('dim_genre')
                 field: genre_sk
       - name: weight_factor
-        data_type: decimal(18, 10)
+        data_type: decimal(38, 20)
         constraints: [{type: not_null}]
         data_tests: [not_null]
     data_tests:
@@ -318,7 +318,7 @@ models:
                 to: ref('dim_company')
                 field: company_sk
       - name: weight_factor
-        data_type: decimal(18, 10)
+        data_type: decimal(38, 20)
         constraints: [{type: not_null}]
         data_tests: [not_null]
     data_tests:
@@ -366,7 +366,7 @@ models:
                 to: ref('dim_country')
                 field: country_sk
       - name: weight_factor
-        data_type: decimal(18, 10)
+        data_type: decimal(38, 20)
         constraints: [{type: not_null}]
         data_tests: [not_null]
     data_tests:

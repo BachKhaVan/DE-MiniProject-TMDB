@@ -9,12 +9,12 @@ HERE = Path(__file__).resolve().parent
 CASES: dict[str, dict] = {}
 
 def register(case_id, section, title, expected, *, category='Yêu cầu bắt buộc', purpose=None,
-             input_data=None, steps=None, evidence='Kết quả chạy mới', demo=False, fix=None):
+             input_data=None, steps=None, evidence='Kết quả chạy mới', demo=False, fix=None, observation=False):
     if case_id in CASES: raise ValueError(f'Duplicate case ID: {case_id}')
     CASES[case_id] = {'id':case_id,'section':section,'name':title,'category':category,
       'purpose':purpose or title, 'input': input_data or 'Source/DB tương ứng của project',
       'steps':steps or 'Thực hiện assertion mô tả trong mã test.', 'expected':expected,
-      'evidence_kind':evidence,'demo':bool(demo),
+      'evidence_kind':evidence,'demo':bool(demo),'observation':observation,
       'remediation': fix or 'Đối chiếu bằng chứng, kiểm tra nguồn dữ liệu và sửa trong nhiệm vụ riêng.'}
     return case_id
 
@@ -47,7 +47,7 @@ def connect_readonly():
     cfg=db_config()
     if not cfg['password']: raise Blocked('Thiếu mật khẩu: TMDB_DB_PASSWORD (readonly) hoặc TMDB_TEST_DB_PASSWORD (isolated)')
     try:
-        conn=psycopg.connect(**cfg,connect_timeout=4,options='-c default_transaction_read_only=on')
+        conn=psycopg.connect(**cfg,connect_timeout=4,options='-c default_transaction_read_only=on -c statement_timeout=60000 -c lock_timeout=5000')
         conn.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY')
         if conn.execute('SHOW transaction_read_only').fetchone()[0]!='on':
             conn.close();raise Blocked('Không chứng minh được session chỉ đọc')
@@ -74,12 +74,13 @@ def violation_rows(conn, sql):
     """Sql returns violations, never a PASS flag; counts are independent of LIMIT."""
     sql=sql.strip().rstrip(';')
     try:
-        total=conn.execute(f'SELECT count(*) FROM ({sql}) AS violating_rows').fetchone()[0]
-        rows=conn.execute(f'SELECT row_to_json(v) FROM ({sql}) v ORDER BY row_to_json(v)::text LIMIT 10').fetchall()
+        with conn.transaction():  # savepoint: a failed query must not discard the snapshot
+            total=conn.execute(f'SELECT count(*) FROM ({sql}) AS violating_rows').fetchone()[0]
+            rows=conn.execute(f'SELECT row_to_json(v) FROM ({sql}) v ORDER BY row_to_json(v)::text LIMIT 10').fetchall()
     except Exception as e:
-        # SQL failures are BLOCKED (incompatible snapshot), not falsely recorded as zero violations.
-        conn.rollback()
-        raise Blocked(f'Không thực hiện được truy vấn SQL ({type(e).__name__}); kiểm tra bảng/cột/model có tồn tại') from None
+        if getattr(e, 'sqlstate', None) in ('42P01', '42703', '42501', '57014', '55P03'):
+            raise Blocked(f'Thiếu bảng/cột/quyền hoặc truy vấn quá hạn ({type(e).__name__})') from None
+        raise  # query defects and invalid data must fail, never become BLOCKED
     return total,[r[0] for r in rows]
 
 def report_check(request, conn, sql, label):
@@ -101,3 +102,23 @@ def dbt_source_fingerprint():
         digest.update(str(path.relative_to(root)).encode('utf8'))
         digest.update(hashlib.sha256(path.read_bytes()).digest())
     return digest.hexdigest()
+
+
+def dbt_executable():
+    """Prefer dbt from the interpreter running these tests; activation is optional."""
+    import shutil, sys
+    for name in ('dbt.exe', 'dbt'):
+        candidate=Path(sys.executable).parent/name
+        if candidate.is_file():return str(candidate)
+    return shutil.which('dbt')
+
+
+def load_connection_env(path):
+    """Explicit opt-in to a local .env; never log values or execute shell syntax."""
+    mapping={'POSTGRES_DB':'TMDB_DB_NAME','POSTGRES_USER':'TMDB_DB_USER','POSTGRES_PASSWORD':'TMDB_DB_PASSWORD'}
+    for line in Path(path).read_text(encoding='utf-8-sig').splitlines():
+        if not line.strip() or line.lstrip().startswith('#') or '=' not in line:continue
+        key,value=line.split('=',1);key=key.strip();value=value.strip()
+        if len(value)>=2 and value[0]==value[-1] and value[0] in ('"',"'"):value=value[1:-1]
+        target=mapping.get(key,key if key in ('TMDB_DB_HOST','TMDB_DB_PORT','TMDB_DB_NAME','TMDB_DB_USER','TMDB_DB_PASSWORD') else None)
+        if target:os.environ.setdefault(target,value)

@@ -12,12 +12,14 @@ from bi_queries import QUERIES
 def test_independent_bi_sql(case_id,request,ro_db):
     name,sql=QUERIES[case_id]
     try:
-        cur=ro_db.execute('SELECT * FROM ('+sql.strip().rstrip(';')+') AS x')
-        cols=[x.name for x in cur.description]
-        rows=cur.fetchall()
+        with ro_db.transaction():
+            cur=ro_db.execute(sql)
+            cols=[x.name for x in cur.description]
+            rows=cur.fetchall()
     except Exception as e:
-        ro_db.rollback()
-        blocked(f'Không chạy được SQL reference {case_id}: {type(e).__name__}; kiểm tra dds và cú pháp')
+        if getattr(e,'sqlstate',None) in ('42P01','42703','42501','57014','55P03'):
+            blocked(f'Không chạy được SQL reference {case_id}: {type(e).__name__}; kiểm tra môi trường DDS')
+        raise
     samples=[dict(zip(cols,row)) for row in rows[:30]]
     evidence=None
     directory=os.environ.get('TMDB_TEST_EVIDENCE_DIR')

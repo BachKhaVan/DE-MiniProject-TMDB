@@ -1,9 +1,9 @@
 """3.1: source, Mage pipeline implementation, and read-only stage observations."""
-import ast,csv,collections,json,re,sys
+import ast,csv,collections,json,re,sys,os
 from datetime import datetime
 from pathlib import Path
 import pytest
-from core import ROOT,register,record,blocked,report_check
+from core import ROOT,register,record,blocked,report_check,CASES
 
 MOVIE_COLS=('budget','genres','homepage','id','keywords','original_language','original_title','overview','popularity','production_companies','production_countries','release_date','revenue','runtime','spoken_languages','status','tagline','title','vote_average','vote_count')
 CREDIT_COLS=('movie_id','title','cast','crew')
@@ -15,7 +15,7 @@ SOURCES={
 for key,(fn,cols,_) in SOURCES.items():
  register(key,'3.1',f'CSV {fn} tồn tại và có header',f'CSV có đủ {len(cols)} cột bắt buộc, không trùng header',input_data='data/raw/'+fn,steps='csv.DictReader, đối chiếu cột thực tế',demo=key=='MG01')
 for key,title in [('MG04','Movies: khóa id không null hoặc trùng trong file nguồn'),('MG05','Credits: khóa movie_id không null hoặc trùng trong file nguồn'),('MG06','Movie release_date parse được hoặc được ghi nhận coerce'),('MG07','Các trường JSON phim đúng cú pháp hoặc ghi nhận bất thường'),('MG08','Quan hệ CSV movies và credits hai chiều')]:
- register(key,'3.1',title,'Phân tích nguồn và ghi lại số liệu/bất thường; không giả định dữ liệu hoàn hảo',category='Kiểm tra độ bền',steps='Đọc CSV nguồn, thống kê và lấy tối đa 10 mẫu có thứ tự')
+ register(key,'3.1',title,'Phân tích nguồn và ghi lại số liệu/bất thường; không giả định dữ liệu hoàn hảo',category='Kiểm tra độ bền',steps='Đọc CSV nguồn, thống kê và lấy tối đa 10 mẫu có thứ tự',observation=True)
 STATIC={
  'MG09':('mage_pipeline/transformers/clean_movies_data.py','drop_duplicates','dropna',"to_datetime"),
  'MG10':('mage_pipeline/transformers/clean_credits_data.py','drop_duplicates','dropna'),
@@ -36,6 +36,9 @@ register('MG21','3.1','Full load rowcount stage so với CSV sau làm sạch','S
 register('MG22','3.1','Quan hệ hai bảng stage và khóa null/trùng','Stage không mất tham chiếu / khóa sau load sạch',input_data='PostgreSQL stage')
 register('MG23','3.1','Bảng watermark tồn tại và có dòng incremental','Có một dòng tmdb_incremental và LSET không null',input_data='PostgreSQL control')
 register('MG24','3.1','Metadata Mage có log run thực và rowcount','Phải có log run mới có thể khẳng định các pipeline thực thi thành công',category='Kiểm tra độ bền',input_data='Mage runtime log',fix='Mở Mage UI, chạy trong isolated, cung cấp run ID/log block')
+CASES['MG19']['observation']=True
+CASES['MG19']['expected']='Quan sát source; đề cho phép batch tĩnh, không bắt buộc lọc thời gian LSET/CET'
+CASES['MG24']['category']='Yêu cầu bắt buộc'
 
 
 def csv_rows(name):
@@ -104,10 +107,29 @@ def test_mage_implementation(case_id,request):
     p=ROOT/filename
     if not p.is_file(): blocked(f'Thiếu source: {filename}')
     code=p.read_text(encoding='utf8')
-    try: ast.parse(code)
+    try: tree=ast.parse(code)
     except SyntaxError as e:pytest.fail(f'Python syntax: {e.msg}')
-    norm=re.sub(r'\s+','',code)
-    missing=[t for t in tokens if re.sub(r'\s+','',t) not in norm]
+    # Inspect actual call/string nodes; comments, quote style and whitespace are irrelevant.
+    calls=[n for n in ast.walk(tree) if isinstance(n,ast.Call)]
+    methods={n.func.attr for n in calls if isinstance(n.func,ast.Attribute)}
+    strings=[n.value for n in ast.walk(tree) if isinstance(n,ast.Constant) and isinstance(n.value,str)]
+    export_specs={'MG11':('stage','stg_tmdb_movies','replace'),
+                  'MG12':('stage','stg_tmdb_credits','replace'),
+                  'MG13':('stage','stg_tmdb_movies','append'),
+                  'MG15':('control','etl_watermark','append')}
+    if case_id in export_specs:
+        schema,table,mode=export_specs[case_id]
+        matching=[]
+        for call in calls:
+            if not isinstance(call.func,ast.Attribute) or call.func.attr!='export':continue
+            args=[n.value if isinstance(n,ast.Constant) else None for n in call.args]
+            kws={kw.arg:kw.value.value for kw in call.keywords if isinstance(kw.value,ast.Constant)}
+            if len(args)>=3 and args[1:3]==[schema,table] and kws.get('if_exists')==mode:
+                matching.append(kws)
+        missing=[] if matching else [f'export(df, {schema}, {table}, if_exists={mode})']
+        if case_id=='MG15' and not any(x.get('unique_conflict_method')=='UPDATE' for x in matching):missing.append('unique_conflict_method=UPDATE')
+    else:
+        missing=[t for t in tokens if t not in methods and not any(t in s for s in strings)]
     record(request,{'source':filename,'present_tokens':[t for t in tokens if t not in missing],'missing_tokens':missing},note='Bằng chứng tĩnh, không chứng minh pipeline đã chạy')
     assert not missing, f'Mã nguồn không còn chứa quy tắc được kiểm tra: {missing}'
 
@@ -129,19 +151,33 @@ def test_pipeline_risks(case_id,request):
                 'export_credits_to_postgres':['clean_credits_data']}
             errors=[f'{k}: upstream={blocks.get(k,{}).get("upstream_blocks")}' for k,v in expected.items() if blocks.get(k,{}).get('upstream_blocks')!=v]
         else:
-            actual=blocks.get('update_watermark',{}).get('upstream_blocks',[])
+            def ancestors(uid,seen=None):
+                seen=set() if seen is None else seen
+                for parent in blocks.get(uid,{}).get('upstream_blocks',[]):
+                    if parent not in seen:
+                        seen.add(parent);ancestors(parent,seen)
+                return seen
+            actual=sorted(ancestors('update_watermark'))
             errors=[] if 'export_incremental_stage' in actual else [f'upstream hiện tại = {actual}, thiếu exporter']
         record(request,{'pipeline':fn,'errors':errors})
         assert not errors, '; '.join(errors)
     elif case_id=='MG19':
         t=(ROOT/'mage_pipeline/data_loaders/load_new_batch.py').read_text(encoding='utf8')
         record(request,{'loader_uses_lset_or_cet':bool(re.search(r'\b(lset|cet)\b',t,re.I))})
-        assert re.search(r'\b(lset|cet)\b',t,re.I),'Loader chỉ đọc nguyên batch CSV, không dùng LSET/CET'
+        # The assignment explicitly permits simulated static batches.
     else:
         t=(ROOT/'mage_pipeline/data_exporters/export_incremental_stage.py').read_text(encoding='utf8')
-        safe=bool(re.search(r'upsert|on\s+conflict|drop_duplicates|unique\s*\(',t,re.I))
-        record(request,{'deduplication_in_exporter':safe})
-        assert safe,'Exporter append không thấy cơ chế chống trùng ở cấp exporter; cần thực nghiệm replay isolated'
+        tree=ast.parse(t)
+        calls=[n for n in ast.walk(tree) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr=='export']
+        configured=[]
+        for call in calls:
+            values={}
+            for kw in call.keywords:
+                try:values[kw.arg]=ast.literal_eval(kw.value)
+                except (ValueError,TypeError):pass
+            configured.append(values)
+        record(request,{'export_options':configured},note='Cấu hình conflict không chứng minh PK/UNIQUE tồn tại; dùng MI04/MI05 để kiểm replay thật')
+        blocked('Không thể kết luận chống trùng từ source; cần replay thật MI04/MI05 và unique constraint của stage')
 
 @pytest.mark.m31
 @pytest.mark.readonly
@@ -175,4 +211,6 @@ def test_mage_stage(case_id,request,ro_db):
             target.append({'table':table,'cleaned_count':stats.clean_rows,'actual_count':n})
         record(request,{'comparison':target},note='Nếu stage đã append Incremental, cần đối chiếu snapshot trước khi khẳng định FAIL')
         changed=any(x['actual_count']!=x['cleaned_count'] for x in target)
-        if changed:blocked('Số dòng stage khác CSV Full Load; cần xác nhận snapshot/append incremental trước khi chấm FAIL')
+        if os.getenv('TMDB_STAGE_SNAPSHOT')!='full':
+            blocked('Chưa xác nhận Full Load: dùng --snapshot full sau khi chạy ingestion và chưa append incremental')
+        assert not changed,'Snapshot Full Load đã xác nhận nhưng số dòng stage khác nguồn sau làm sạch'

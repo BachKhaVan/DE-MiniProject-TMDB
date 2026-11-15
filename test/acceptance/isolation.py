@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Prepare/launch isolated Mage/Postgres using ONLY newly generated files."""
-import argparse,json,os,secrets,shutil,subprocess,sys,stat
+import argparse,json,os,secrets,shutil,subprocess,sys,stat,hashlib,datetime
 from pathlib import Path
-from core import ROOT,HERE,db_config,connect_readonly,Blocked,dbt_source_fingerprint
+from core import ROOT,HERE,db_config,connect_readonly,Blocked,dbt_source_fingerprint,dbt_executable
 
 R=HERE/'.runtime'; META=R/'isolated.json'; COMPOSE=HERE/'compose.isolated.yaml'
 
@@ -64,7 +64,11 @@ def prepare():
 
 def dbt_build():
     need_config()
-    if shutil.which('dbt') is None:raise Blocked('dbt Core chưa có trên PATH')
+    executable=dbt_executable()
+    if executable is None:raise Blocked('dbt Core chưa có trong Python hiện tại hoặc PATH')
+    # Invalidate previous successful evidence BEFORE attempting a new build.
+    for filename in ('dbt_build_provenance.json','dbt_build_run_results.json','dbt_rebuild_comparison.json'):
+        (R/filename).unlink(missing_ok=True)
     # Safe guard from accidentally building on demo warehouse.
     envloc=os.environ.copy()
     envloc.update({'TMDB_TEST_MODE':'integration','TMDB_TEST_APPROVED':'I_UNDERSTAND_ISOLATED_WRITES',
@@ -82,22 +86,44 @@ def dbt_build():
     target.mkdir(exist_ok=True);logs.mkdir(exist_ok=True)
     envloc.update({'DBT_PROFILES_DIR':str(R/'dbt_profiles'),'DBT_TARGET_PATH':str(target),'DBT_LOG_PATH':str(logs)})
     # Never pass a password as a CLI flag; suppress raw output that may contain credentials.
-    for action in ('seed','build','docs'):
-        cmd=['dbt',action,*(['generate'] if action=='docs' else []),'--project-dir',str(ROOT/'dbt_transform'),'--profiles-dir',str(R/'dbt_profiles'),
+    def capture():
+        saved_env=dict(os.environ)
+        try:
+            os.environ.update({k:v for k,v in envloc.items() if k.startswith('TMDB_TEST_')})
+            con=connect_readonly()
+            try:
+                from sql_checks import TABLES
+                result={}
+                for table in TABLES:
+                    digest=hashlib.sha256();count=0
+                    for row in con.execute(f'SELECT row_to_json(t)::text FROM dds.{table} t ORDER BY row_to_json(t)::text'):
+                        digest.update(row[0].encode('utf8'));digest.update(b'\n');count+=1
+                    result[table]={'rows':count,'sha256':digest.hexdigest()}
+                from scenario import snapshot
+                return {'dds':result,'source':snapshot(con)}
+            finally:con.close()
+        finally:os.environ.clear();os.environ.update(saved_env)
+    first=None
+    for label in ('build','rebuild','docs'):
+        action='build' if label=='rebuild' else label
+        cmd=[executable,action,*(['generate'] if action=='docs' else []),'--project-dir',str(ROOT/'dbt_transform'),'--profiles-dir',str(R/'dbt_profiles'),
              '--target','isolated','--target-path',str(target),'--log-path',str(logs)]
         p=subprocess.run(cmd,env=envloc,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
         safe=p.stdout.replace(need_config()['password'],'[REDACTED]')
-        (R/f'dbt_{action}.log').write_text(safe,encoding='utf8')
-        print('dbt',action,'exit',p.returncode,'log trong .runtime; mật khẩu đã ẩn')
+        (R/f'dbt_{label}.log').write_text(safe,encoding='utf8')
+        print('dbt',label,'exit',p.returncode,'log trong .runtime; mật khẩu đã ẩn')
         if p.returncode:return p.returncode
-        if action=='build' and (target/'run_results.json').exists():
+        if label=='build':first=capture()
+        if label=='rebuild' and (target/'run_results.json').exists():
+            second=capture()
+            comparison={'before':first,'after':second,'fingerprint':dbt_source_fingerprint()}
+            (R/'dbt_rebuild_comparison.json').write_text(json.dumps(comparison,indent=2),encoding='utf8')
             shutil.copy2(target/'run_results.json',R/'dbt_build_run_results.json')
-            import datetime
             provenance={'fingerprint':dbt_source_fingerprint(),
                         'completed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
                         'target':'tmdb_test_warehouse'}
             (R/'dbt_build_provenance.json').write_text(json.dumps(provenance,indent=2),encoding='utf8')
-    print('Đã chạy seed/build chỉ trên database isolated; hãy chạy acceptance và lưu kết quả')
+    print('Đã chạy build/rebuild/docs trên database isolated; dbt build bao gồm seeds và tests')
     return 0
 
 def failure_toggle(enable):
@@ -149,7 +175,7 @@ def main():
         if args.action=='down':
             print('Chỉ down compose project tmdb_test_acceptance và volume tmdb_test_acceptance_pg_data')
             return run_compose('down','--volumes')
-        return run_compose(args.action,'-d') if args.action=='up' else run_compose(args.action)
+        return run_compose('up','-d','--wait','--wait-timeout','120') if args.action=='up' else run_compose(args.action)
     except Blocked as e:
         print('BLOCKED:',e,file=sys.stderr);return 2
 

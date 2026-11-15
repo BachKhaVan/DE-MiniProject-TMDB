@@ -1,0 +1,1084 @@
+{
+  "id": "Q3SQL",
+  "query": "\nSELECT d.decade,g.genre_name,count(DISTINCT f.movie_sk) AS valid_movies,\n sum(f.revenue*bg.weight_factor) AS weighted_revenue,\n sum(f.profit*bg.weight_factor) AS weighted_profit\nFROM dds.fact_movie f JOIN dds.dim_date d USING(date_sk)\nJOIN dds.bridge_movie_genre bg USING(movie_sk) JOIN dds.dim_genre g USING(genre_sk)\nWHERE f.is_finance_valid=1 GROUP BY d.decade,g.genre_name\nORDER BY d.decade,g.genre_name",
+  "column_names": [
+    "decade",
+    "genre_name",
+    "valid_movies",
+    "weighted_revenue",
+    "weighted_profit"
+  ],
+  "rows": [
+    {
+      "decade": "1910s",
+      "genre_name": "Drama",
+      "valid_movies": 1,
+      "weighted_revenue": "8394751.0000000000",
+      "weighted_profit": "8008844.0000000000"
+    },
+    {
+      "decade": "1920s",
+      "genre_name": "Drama",
+      "valid_movies": 3,
+      "weighted_revenue": "9111210.9991214000",
+      "weighted_profit": "-37406789.0008578000"
+    },
+    {
+      "decade": "1920s",
+      "genre_name": "Music",
+      "valid_movies": 1,
+      "weighted_revenue": "1452666.6665214000",
+      "weighted_profit": "1326333.3332007000"
+    },
+    {
+      "decade": "1920s",
+      "genre_name": "Romance",
+      "valid_movies": 2,
+      "weighted_revenue": "8785999.9991214000",
+      "weighted_profit": "8577999.9991422000"
+    },
+    {
+      "decade": "1920s",
+      "genre_name": "Science Fiction",
+      "valid_movies": 1,
+      "weighted_revenue": "325211.0000000000",
+      "weighted_profit": "-45984789.0000000000"
+    },
+    {
+      "decade": "1920s",
+      "genre_name": "War",
+      "valid_movies": 1,
+      "weighted_revenue": "7333333.3326000000",
+      "weighted_profit": "7251666.6659415000"
+    },
+    {
+      "decade": "1930s",
+      "genre_name": "Action",
+      "valid_movies": 2,
+      "weighted_revenue": "3350666.6664000000",
+      "weighted_profit": "1733999.9998650000"
+    },
+    {
+      "decade": "1930s",
+      "genre_name": "Adventure",
+      "valid_movies": 2,
+      "weighted_revenue": "11935655.6655415011",
+      "weighted_profit": "10709988.9989674011"
+    },
+    {
+      "decade": "1930s",
+      "genre_name": "Animation",
+      "valid_movies": 1,
+      "weighted_revenue": "61641828.6605024838",
+      "weighted_profit": "61145687.6605520979"
+    },
+    {
+      "decade": "1930s",
+      "genre_name": "Comedy",
+      "valid_movies": 7,
+      "weighted_revenue": "19044217.1664839000",
+      "weighted_profit": "16760015.3331855000"
+    },
+    {
+      "decade": "1930s",
+      "genre_name": "Drama",
+      "valid_movies": 7,
+      "weighted_revenue": "147126161.3195941172",
+      "weighted_profit": "142759492.8199257840"
+    },
+    {
+      "decade": "1930s",
+      "genre_name": "Family",
+      "valid_movies": 2,
+      "weighted_revenue": "72893484.3260439849",
+      "weighted_profit": "71471676.6595194990"
+    },
+    {
+      "decade": "1930s",
+      "genre_name": "Fantasy",
+      "valid_movies": 2,
+      "weighted_revenue": "72893484.3260439849",
+      "weighted_profit": "71471676.6595194990"
+    },
+    {
+      "decade": "1930s",
+      "genre_name": "History",
+      "valid_movies": 1,
+      "weighted_revenue": "2666666.6664000000",
+      "weighted_profit": "1349999.9998650000"
+    },
+    {
+      "decade": "1930s",
+      "genre_name": "Music",
+      "valid_movies": 3,
+      "weighted_revenue": "3160999.9996839000",
+      "weighted_profit": "2144999.9997855000"
+    },
+    {
+      "decade": "1930s",
+      "genre_name": "Romance",
+      "valid_movies": 7,
+      "weighted_revenue": "142519711.8196780172",
+      "weighted_profit": "139185509.1532462840"
+    },
+    {
+      "decade": "1930s",
+      "genre_name": "War",
+      "valid_movies": 3,
+      "weighted_revenue": "134076161.3199941172",
+      "weighted_profit": "132442826.6534607840"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "Action",
+      "valid_movies": 1,
+      "weighted_revenue": "1950000.0000000000",
+      "weighted_profit": "1700000.0000000000"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "Adventure",
+      "valid_movies": 1,
+      "weighted_revenue": "3057333.3330276000",
+      "weighted_profit": "2390666.6664276000"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "Animation",
+      "valid_movies": 3,
+      "weighted_revenue": "159072383.3216410950",
+      "weighted_profit": "156726383.3217456950"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "Comedy",
+      "valid_movies": 1,
+      "weighted_revenue": "3446000.0000000000",
+      "weighted_profit": "2265500.0000000000"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "Drama",
+      "valid_movies": 13,
+      "weighted_revenue": "147638674.6559241242",
+      "weighted_profit": "136557341.3229996242"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "Family",
+      "valid_movies": 4,
+      "weighted_revenue": "162287091.3213196242",
+      "weighted_profit": "158881091.3215302242"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "Fantasy",
+      "valid_movies": 1,
+      "weighted_revenue": "3214707.9996785292",
+      "weighted_profit": "2154707.9997845292"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "History",
+      "valid_movies": 2,
+      "weighted_revenue": "9833333.3325450000",
+      "weighted_profit": "8883333.3326150000"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "Music",
+      "valid_movies": 3,
+      "weighted_revenue": "32697333.3305560000",
+      "weighted_profit": "28906833.3306320000"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "Mystery",
+      "valid_movies": 2,
+      "weighted_revenue": "5333333.3331000000",
+      "weighted_profit": "4189333.3331500000"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "Romance",
+      "valid_movies": 6,
+      "weighted_revenue": "23337583.3320605000",
+      "weighted_profit": "17806249.9989514000"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "Thriller",
+      "valid_movies": 1,
+      "weighted_revenue": "2333333.3331000000",
+      "weighted_profit": "1833333.3331500000"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "War",
+      "valid_movies": 2,
+      "weighted_revenue": "3737666.6664879000",
+      "weighted_profit": "2611999.9999088000"
+    },
+    {
+      "decade": "1940s",
+      "genre_name": "Western",
+      "valid_movies": 3,
+      "weighted_revenue": "34812000.0000000000",
+      "weighted_profit": "24212000.0000000000"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "Action",
+      "valid_movies": 4,
+      "weighted_revenue": "15535920.4988000000",
+      "weighted_profit": "12248830.1656000000"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "Adventure",
+      "valid_movies": 3,
+      "weighted_revenue": "16266666.6655600000",
+      "weighted_profit": "12279999.9990670000"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "Comedy",
+      "valid_movies": 4,
+      "weighted_revenue": "18833333.3328600000",
+      "weighted_profit": "15390718.9996513600"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "Crime",
+      "valid_movies": 2,
+      "weighted_revenue": "7633333.3330500000",
+      "weighted_profit": "6761666.6664250000"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "Drama",
+      "valid_movies": 18,
+      "weighted_revenue": "158971082.4944500000",
+      "weighted_profit": "128349415.8285550000"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "History",
+      "valid_movies": 4,
+      "weighted_revenue": "31649999.9978900000",
+      "weighted_profit": "24149999.9982650000"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "Horror",
+      "valid_movies": 1,
+      "weighted_revenue": "1666666.6665000000",
+      "weighted_profit": "1596666.6665070000"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "Music",
+      "valid_movies": 4,
+      "weighted_revenue": "11299999.9997600000",
+      "weighted_profit": "8349309.6665113600"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "Mystery",
+      "valid_movies": 1,
+      "weighted_revenue": "2333333.3331000000",
+      "weighted_profit": "1933333.3331400000"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "Romance",
+      "valid_movies": 10,
+      "weighted_revenue": "67801828.6632100000",
+      "weighted_profit": "56025880.9970913600"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "Science Fiction",
+      "valid_movies": 2,
+      "weighted_revenue": "11066666.6655600000",
+      "weighted_profit": "9329999.9990670000"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "Thriller",
+      "valid_movies": 2,
+      "weighted_revenue": "5166666.6661500000",
+      "weighted_profit": "4349999.9995650000"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "War",
+      "valid_movies": 3,
+      "weighted_revenue": "24316666.6645400000",
+      "weighted_profit": "21516666.6646950000"
+    },
+    {
+      "decade": "1950s",
+      "genre_name": "Western",
+      "valid_movies": 3,
+      "weighted_revenue": "11400000.0000000000",
+      "weighted_profit": "9716243.0000000000"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Action",
+      "valid_movies": 16,
+      "weighted_revenue": "249039010.5791221745",
+      "weighted_profit": "219597343.9141371745"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Adventure",
+      "valid_movies": 13,
+      "weighted_revenue": "269045315.9275521745",
+      "weighted_profit": "245394605.7622233745"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Comedy",
+      "valid_movies": 11,
+      "weighted_revenue": "119156589.2618895667",
+      "weighted_profit": "104231255.9290057667"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Crime",
+      "valid_movies": 7,
+      "weighted_revenue": "71398194.7485447726",
+      "weighted_profit": "61473194.7487447726"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Drama",
+      "valid_movies": 35,
+      "weighted_revenue": "408445199.2035743858",
+      "weighted_profit": "316612883.2066201174"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Family",
+      "valid_movies": 4,
+      "weighted_revenue": "136129788.9120108132",
+      "weighted_profit": "124496455.5792108132"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Fantasy",
+      "valid_movies": 1,
+      "weighted_revenue": "34090908.9965909091",
+      "weighted_profit": "32090908.9967909091"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "History",
+      "valid_movies": 11,
+      "weighted_revenue": "123636629.1973000000",
+      "weighted_profit": "75848295.8655705000"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Horror",
+      "valid_movies": 3,
+      "weighted_revenue": "51798475.3311534858",
+      "weighted_profit": "50348825.9979537174"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Music",
+      "valid_movies": 7,
+      "weighted_revenue": "134076743.5139646767",
+      "weighted_profit": "116163410.1811646767"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Mystery",
+      "valid_movies": 5,
+      "weighted_revenue": "44431808.6632634858",
+      "weighted_profit": "36665141.9970534858"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Romance",
+      "valid_movies": 11,
+      "weighted_revenue": "183087263.9092175657",
+      "weighted_profit": "155953597.2443092657"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Science Fiction",
+      "valid_movies": 3,
+      "weighted_revenue": "25671555.3310161778",
+      "weighted_profit": "12854888.6647311778"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Thriller",
+      "valid_movies": 13,
+      "weighted_revenue": "225293815.8456621745",
+      "weighted_profit": "209966499.8465874061"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "War",
+      "valid_movies": 7,
+      "weighted_revenue": "74513055.2792900455",
+      "weighted_profit": "59846388.6130500455"
+    },
+    {
+      "decade": "1960s",
+      "genre_name": "Western",
+      "valid_movies": 11,
+      "weighted_revenue": "78814576.1830000000",
+      "weighted_profit": "54604199.3497500000"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Action",
+      "valid_movies": 25,
+      "weighted_revenue": "709562346.0690221060",
+      "weighted_profit": "611693025.2395610042"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Adventure",
+      "valid_movies": 20,
+      "weighted_revenue": "863257490.3836463757",
+      "weighted_profit": "776427157.0546663757"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Comedy",
+      "valid_movies": 20,
+      "weighted_revenue": "538992068.4895648967",
+      "weighted_profit": "474830586.4908321949"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Crime",
+      "valid_movies": 11,
+      "weighted_revenue": "259617607.6593634972",
+      "weighted_profit": "240705274.3263938972"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Documentary",
+      "valid_movies": 1,
+      "weighted_revenue": "11501703.3321831630",
+      "weighted_profit": "11301703.3322031630"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Drama",
+      "valid_movies": 30,
+      "weighted_revenue": "1084022620.3361172595",
+      "weighted_profit": "972679614.8400702595"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Family",
+      "valid_movies": 5,
+      "weighted_revenue": "52784206.0000000000",
+      "weighted_profit": "21434206.0000000000"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Fantasy",
+      "valid_movies": 6,
+      "weighted_revenue": "95992797.7488073970",
+      "weighted_profit": "69940297.7492873970"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "History",
+      "valid_movies": 6,
+      "weighted_revenue": "66378694.8607297630",
+      "weighted_profit": "35915028.1960497630"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Horror",
+      "valid_movies": 12,
+      "weighted_revenue": "569981872.7183763571",
+      "weighted_profit": "539673706.0526767571"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Music",
+      "valid_movies": 4,
+      "weighted_revenue": "42020368.2478773414",
+      "weighted_profit": "31037034.9148723414"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Mystery",
+      "valid_movies": 4,
+      "weighted_revenue": "57289905.9945860094",
+      "weighted_profit": "43214905.9959060094"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Romance",
+      "valid_movies": 8,
+      "weighted_revenue": "270039535.6626343066",
+      "weighted_profit": "248489535.6635143066"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Science Fiction",
+      "valid_movies": 21,
+      "weighted_revenue": "770811788.2177179182",
+      "weighted_profit": "691842621.5533279182"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Thriller",
+      "valid_movies": 20,
+      "weighted_revenue": "809217949.9465141300",
+      "weighted_profit": "750246283.2829171300"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "War",
+      "valid_movies": 8,
+      "weighted_revenue": "139267905.3604846110",
+      "weighted_profit": "88670905.3625846110"
+    },
+    {
+      "decade": "1970s",
+      "genre_name": "Western",
+      "valid_movies": 4,
+      "weighted_revenue": "88116666.6665000000",
+      "weighted_profit": "75438901.6666238982"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Action",
+      "valid_movies": 69,
+      "weighted_revenue": "2818441272.6519425312",
+      "weighted_profit": "2324724431.6747577153"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Adventure",
+      "valid_movies": 62,
+      "weighted_revenue": "2673935656.8496045018",
+      "weighted_profit": "2208142149.2057996859"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Animation",
+      "valid_movies": 2,
+      "weighted_revenue": "28430200.8305179718",
+      "weighted_profit": "20330200.8309279718"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Comedy",
+      "valid_movies": 54,
+      "weighted_revenue": "2050288619.4004033570",
+      "weighted_profit": "1653176952.7459853570"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Crime",
+      "valid_movies": 22,
+      "weighted_revenue": "521759594.0226938808",
+      "weighted_profit": "418019594.0264938808"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Documentary",
+      "valid_movies": 1,
+      "weighted_revenue": "3353184.0000000000",
+      "weighted_profit": "3273184.0000000000"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Drama",
+      "valid_movies": 63,
+      "weighted_revenue": "2248175285.7801063775",
+      "weighted_profit": "1808963619.1210183775"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Family",
+      "valid_movies": 12,
+      "weighted_revenue": "483248397.5634082219",
+      "weighted_profit": "432806730.8983182219"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Fantasy",
+      "valid_movies": 27,
+      "weighted_revenue": "764790310.9664187004",
+      "weighted_profit": "593731977.6394687004"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "History",
+      "valid_movies": 15,
+      "weighted_revenue": "213475129.0802341952",
+      "weighted_profit": "98761795.7501341952"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Horror",
+      "valid_movies": 47,
+      "weighted_revenue": "726519253.3557642944",
+      "weighted_profit": "596945253.3587826944"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Music",
+      "valid_movies": 9,
+      "weighted_revenue": "187345147.0761985791",
+      "weighted_profit": "133628480.4114985791"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Mystery",
+      "valid_movies": 9,
+      "weighted_revenue": "72480595.9929719889",
+      "weighted_profit": "41996595.9957703889"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Romance",
+      "valid_movies": 25,
+      "weighted_revenue": "585120931.0808143784",
+      "weighted_profit": "482077597.7506263784"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Science Fiction",
+      "valid_movies": 45,
+      "weighted_revenue": "1352705917.6851856215",
+      "weighted_profit": "1066596743.3596692056"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Thriller",
+      "valid_movies": 60,
+      "weighted_revenue": "1346952574.7276702545",
+      "weighted_profit": "1036969241.4054502545"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "War",
+      "valid_movies": 10,
+      "weighted_revenue": "486147629.3958505488",
+      "weighted_profit": "401180962.7318505488"
+    },
+    {
+      "decade": "1980s",
+      "genre_name": "Western",
+      "valid_movies": 6,
+      "weighted_revenue": "24621061.9837410876",
+      "weighted_profit": "-12271.3497589124"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Action",
+      "valid_movies": 165,
+      "weighted_revenue": "6939347125.6054258008",
+      "weighted_profit": "4239174806.6457113659"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Adventure",
+      "valid_movies": 107,
+      "weighted_revenue": "5918250486.5713295387",
+      "weighted_profit": "3995385486.6355495387"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Animation",
+      "valid_movies": 22,
+      "weighted_revenue": "1379330200.4895205403",
+      "weighted_profit": "1013730117.1714372153"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Comedy",
+      "valid_movies": 196,
+      "weighted_revenue": "8012260868.7000575638",
+      "weighted_profit": "5760037134.4389408039"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Crime",
+      "valid_movies": 121,
+      "weighted_revenue": "3356003173.6305487371",
+      "weighted_profit": "2209001136.7804883022"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Documentary",
+      "valid_movies": 2,
+      "weighted_revenue": "8330611.0000000000",
+      "weighted_profit": "5576963.0000000000"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Drama",
+      "valid_movies": 255,
+      "weighted_revenue": "9617580947.3719403661",
+      "weighted_profit": "6372527429.1529410411"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Family",
+      "valid_movies": 54,
+      "weighted_revenue": "2740258215.8993705341",
+      "weighted_profit": "2018249882.5957765341"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Fantasy",
+      "valid_movies": 66,
+      "weighted_revenue": "2427686259.3475020850",
+      "weighted_profit": "1512269590.0557854186"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "History",
+      "valid_movies": 19,
+      "weighted_revenue": "799153690.6867294499",
+      "weighted_profit": "550839331.8659294499"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Horror",
+      "valid_movies": 55,
+      "weighted_revenue": "1399407771.7506377217",
+      "weighted_profit": "871139434.3734710553"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Music",
+      "valid_movies": 12,
+      "weighted_revenue": "315272887.7755319419",
+      "weighted_profit": "189589554.4473319419"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Mystery",
+      "valid_movies": 66,
+      "weighted_revenue": "2222282636.6740317532",
+      "weighted_profit": "1442477636.7032587532"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Romance",
+      "valid_movies": 107,
+      "weighted_revenue": "4707288039.0414607030",
+      "weighted_profit": "3605186654.5843857030"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Science Fiction",
+      "valid_movies": 83,
+      "weighted_revenue": "3400881456.7876659802",
+      "weighted_profit": "2200114788.7702909802"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Thriller",
+      "valid_movies": 180,
+      "weighted_revenue": "6779197019.0548862600",
+      "weighted_profit": "4343803963.9277965936"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "War",
+      "valid_movies": 14,
+      "weighted_revenue": "549555737.9468875648",
+      "weighted_profit": "369639071.2874875648"
+    },
+    {
+      "decade": "1990s",
+      "genre_name": "Western",
+      "valid_movies": 7,
+      "weighted_revenue": "374068016.1850246384",
+      "weighted_profit": "267234682.8545246384"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Action",
+      "valid_movies": 358,
+      "weighted_revenue": "18642307168.6155109417",
+      "weighted_profit": "11369862383.6400143481"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Adventure",
+      "valid_movies": 263,
+      "weighted_revenue": "18407449991.8593894521",
+      "weighted_profit": "12373223003.6622941521"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Animation",
+      "valid_movies": 88,
+      "weighted_revenue": "6459519932.8707928617",
+      "weighted_profit": "4407426314.0025828617"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Comedy",
+      "valid_movies": 504,
+      "weighted_revenue": "21757856723.7111048388",
+      "weighted_profit": "13682519980.0115307519"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Crime",
+      "valid_movies": 224,
+      "weighted_revenue": "6541929122.1792479263",
+      "weighted_profit": "3692888564.6449538147"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Documentary",
+      "valid_movies": 22,
+      "weighted_revenue": "430713907.9962309205",
+      "weighted_profit": "321809068.6633664205"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Drama",
+      "valid_movies": 607,
+      "weighted_revenue": "19239140067.2107236560",
+      "weighted_profit": "11062060997.3194706057"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Family",
+      "valid_movies": 175,
+      "weighted_revenue": "11135672506.6162880761",
+      "weighted_profit": "7514452002.1214380761"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Fantasy",
+      "valid_movies": 139,
+      "weighted_revenue": "11120243290.4246354154",
+      "weighted_profit": "7878742595.3239254154"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Foreign",
+      "valid_movies": 4,
+      "weighted_revenue": "621487.4166045181",
+      "weighted_profit": "-3711847.6662954819"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "History",
+      "valid_movies": 51,
+      "weighted_revenue": "1476631919.8144737628",
+      "weighted_profit": "558802003.1938850878"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Horror",
+      "valid_movies": 116,
+      "weighted_revenue": "3366404345.7205275856",
+      "weighted_profit": "2193871845.7513275856"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Music",
+      "valid_movies": 44,
+      "weighted_revenue": "1120540087.4409060165",
+      "weighted_profit": "690889135.0711880165"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Mystery",
+      "valid_movies": 118,
+      "weighted_revenue": "3850759816.3041493284",
+      "weighted_profit": "2398637316.3562593284"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Romance",
+      "valid_movies": 270,
+      "weighted_revenue": "8783266906.4115762441",
+      "weighted_profit": "5672459603.0373809508"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Science Fiction",
+      "valid_movies": 153,
+      "weighted_revenue": "7754561088.0107201191",
+      "weighted_profit": "4542712326.2347770191"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Thriller",
+      "valid_movies": 392,
+      "weighted_revenue": "13114523558.9529955662",
+      "weighted_profit": "7343097885.5159624662"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Unknown",
+      "valid_movies": 1,
+      "weighted_revenue": "1672730.0000000000",
+      "weighted_profit": "-327270.0000000000"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "War",
+      "valid_movies": 47,
+      "weighted_revenue": "1513348298.5311651078",
+      "weighted_profit": "631835048.5623764328"
+    },
+    {
+      "decade": "2000s",
+      "genre_name": "Western",
+      "valid_movies": 13,
+      "weighted_revenue": "286150824.1814768515",
+      "weighted_profit": "22317490.8545768515"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Action",
+      "valid_movies": 278,
+      "weighted_revenue": "23549076820.2975076775",
+      "weighted_profit": "15824658142.9622920452"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Adventure",
+      "valid_movies": 190,
+      "weighted_revenue": "21582500171.5683406972",
+      "weighted_profit": "14760220171.2062236972"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Animation",
+      "valid_movies": 72,
+      "weighted_revenue": "8010414980.2034043711",
+      "weighted_profit": "5813902483.4208043711"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Comedy",
+      "valid_movies": 313,
+      "weighted_revenue": "18350692536.0477729268",
+      "weighted_profit": "12282622296.9872723677"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Crime",
+      "valid_movies": 134,
+      "weighted_revenue": "4102862043.2527178826",
+      "weighted_profit": "2421007648.0036244888"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Documentary",
+      "valid_movies": 12,
+      "weighted_revenue": "141292991.9921890179",
+      "weighted_profit": "106280491.9935890179"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Drama",
+      "valid_movies": 409,
+      "weighted_revenue": "15329760251.2469996273",
+      "weighted_profit": "9902205523.4092066555"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Family",
+      "valid_movies": 109,
+      "weighted_revenue": "10360044463.6652445846",
+      "weighted_profit": "7224781966.9397445846"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Fantasy",
+      "valid_movies": 100,
+      "weighted_revenue": "9787252591.9718532439",
+      "weighted_profit": "6323705924.7036362439"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Foreign",
+      "valid_movies": 1,
+      "weighted_revenue": "55650.0000000000",
+      "weighted_profit": "-56850.0000000000"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "History",
+      "valid_movies": 36,
+      "weighted_revenue": "1122834292.1062596683",
+      "weighted_profit": "732588956.2848216683"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Horror",
+      "valid_movies": 98,
+      "weighted_revenue": "3754095985.4730505728",
+      "weighted_profit": "3025850196.3274605728"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Music",
+      "valid_movies": 24,
+      "weighted_revenue": "895893854.9548014777",
+      "weighted_profit": "641793854.9657614777"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Mystery",
+      "valid_movies": 60,
+      "weighted_revenue": "2079018649.1042892530",
+      "weighted_profit": "1311906099.1339655080"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Romance",
+      "valid_movies": 128,
+      "weighted_revenue": "4872592263.8403783850",
+      "weighted_profit": "3401270760.5534105520"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Science Fiction",
+      "valid_movies": 123,
+      "weighted_revenue": "12095968887.0207197419",
+      "weighted_profit": "8417376209.4806047596"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Thriller",
+      "valid_movies": 267,
+      "weighted_revenue": "10975572581.3601818230",
+      "weighted_profit": "7394867575.6803480780"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "War",
+      "valid_movies": 25,
+      "weighted_revenue": "1051055869.2494264252",
+      "weighted_profit": "679885869.2572864252"
+    },
+    {
+      "decade": "2010s",
+      "genre_name": "Western",
+      "valid_movies": 10,
+      "weighted_revenue": "554374808.5552345293",
+      "weighted_profit": "300824808.5658345293"
+    }
+  ]
+}

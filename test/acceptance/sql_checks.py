@@ -13,7 +13,8 @@ TABLES=['fact_movie','dim_movie','dim_date','dim_language','dim_genre','dim_comp
 _EXPECTED_TABLES=','.join("('%s')"%t for t in TABLES)
 add('DW01','Có đúng 12 bảng fact/dim/bridge',f"""
 WITH exp(tbl) AS (VALUES {_EXPECTED_TABLES}), actual AS
- (SELECT table_name AS tbl FROM information_schema.tables WHERE table_schema='dds' AND table_type='BASE TABLE')
+ (SELECT table_name AS tbl FROM information_schema.tables WHERE table_schema='dds' AND table_type='BASE TABLE'
+ AND (left(table_name,5)='fact_' OR left(table_name,4)='dim_' OR left(table_name,7)='bridge_'))
 SELECT 'missing' AS problem, e.tbl FROM exp e LEFT JOIN actual a USING(tbl) WHERE a.tbl IS NULL
 UNION ALL SELECT 'unexpected',a.tbl FROM actual a LEFT JOIN exp e USING(tbl) WHERE e.tbl IS NULL""",demo=True)
 add('DW02','12 bảng có khóa chính vật lý',f"""
@@ -44,7 +45,10 @@ SELECT e.tbl,e.col,e.parent FROM exp e WHERE NOT EXISTS (
  JOIN pg_namespace pn ON pn.oid=parent.relnamespace
  JOIN pg_attribute a ON a.attrelid=child.oid AND a.attname=e.col
  WHERE c.contype='f' AND n.nspname='dds' AND pn.nspname='dds'
- AND child.relname=e.tbl AND parent.relname=e.parent AND a.attnum=ANY(c.conkey))""")
+ AND child.relname=e.tbl AND parent.relname=e.parent AND a.attnum=ANY(c.conkey)
+ AND c.convalidated AND array_length(c.conkey,1)=1 AND array_length(c.confkey,1)=1
+ AND EXISTS (SELECT 1 FROM pg_attribute pa WHERE pa.attrelid=parent.oid
+             AND pa.attnum=c.confkey[1] AND pa.attname=e.col))""")
 add('DW05','Grain Fact = dim_movie = số movie_sk distinct',"""
 SELECT (SELECT count(*) FROM dds.fact_movie) AS fact_rows,
  (SELECT count(DISTINCT movie_sk) FROM dds.fact_movie) AS fact_distinct,
@@ -214,3 +218,60 @@ WITH weights AS (SELECT movie_sk,country_sk,weight_factor,
  count(*) OVER(PARTITION BY movie_sk) AS k FROM dds.bridge_movie_country)
 SELECT movie_sk,country_sk,weight_factor,k FROM weights
 WHERE weight_factor IS NULL OR abs(weight_factor-1.0/k)>0.0000001""",section='3.3')
+
+add('DW50','Stage, staging và Fact có dữ liệu để nghiệm thu',"""
+SELECT 'stage_movies' AS relation WHERE NOT EXISTS (SELECT 1 FROM stage.stg_tmdb_movies)
+UNION ALL SELECT 'staging_movies' WHERE NOT EXISTS (SELECT 1 FROM staging.stg_tmdb_movies)
+UNION ALL SELECT 'fact_movie' WHERE NOT EXISTS (SELECT 1 FROM dds.fact_movie)""")
+
+add('DW51','Không mất hoặc thêm Movie NK giữa staging và DDS',"""
+SELECT 'missing_in_dds' AS problem,s.movie_nk FROM staging.stg_tmdb_movies s
+LEFT JOIN dds.dim_movie m USING(movie_nk) WHERE m.movie_sk IS NULL
+UNION ALL SELECT 'unexpected_in_dds',m.movie_nk FROM dds.dim_movie m
+LEFT JOIN staging.stg_tmdb_movies s USING(movie_nk) WHERE s.movie_nk IS NULL""",section='3.2')
+
+add('DW52','Measures của Fact khớp từng phim nguồn staging',"""
+SELECT m.movie_nk FROM staging.stg_tmdb_movies s JOIN dds.dim_movie m USING(movie_nk)
+JOIN dds.fact_movie f USING(movie_sk)
+WHERE f.budget IS DISTINCT FROM s.budget::numeric(18,0)
+ OR f.revenue IS DISTINCT FROM s.revenue::numeric(18,0)
+ OR f.runtime IS DISTINCT FROM s.runtime::numeric(5,1)
+ OR f.popularity IS DISTINCT FROM s.popularity::numeric(12,6)
+ OR f.vote_average IS DISTINCT FROM s.vote_average::numeric(4,1)
+ OR f.vote_count IS DISTINCT FROM coalesce(s.vote_count,0)""",section='3.2')
+
+add('DW53','Fact liên kết đúng ngày và ngôn ngữ nguồn, kể cả Unknown',"""
+SELECT m.movie_nk,f.date_sk,f.language_sk FROM staging.stg_tmdb_movies s
+JOIN dds.dim_movie m USING(movie_nk) JOIN dds.fact_movie f USING(movie_sk)
+LEFT JOIN dds.dim_date d ON d.date_sk=f.date_sk
+LEFT JOIN dds.dim_language l ON l.language_sk=f.language_sk
+WHERE d.full_date IS DISTINCT FROM s.release_date
+ OR (s.release_date IS NULL AND f.date_sk<>-1)
+ OR l.language_nk IS DISTINCT FROM coalesce(s.language_nk,'unk')""",section='3.2')
+
+add('DW54','Các thành phần hierarchy Date đúng ngày thực',"""
+SELECT date_sk,full_date FROM dds.dim_date WHERE date_sk<>-1 AND (
+ full_date IS NULL OR date_sk IS DISTINCT FROM to_char(full_date,'YYYYMMDD')::integer
+ OR day IS DISTINCT FROM extract(day FROM full_date)::integer
+ OR month IS DISTINCT FROM extract(month FROM full_date)::integer
+ OR quarter IS DISTINCT FROM extract(quarter FROM full_date)::integer
+ OR year IS DISTINCT FROM extract(year FROM full_date)::integer
+ OR month_name IS DISTINCT FROM (ARRAY['January','February','March','April','May','June',
+ 'July','August','September','October','November','December'])[extract(month FROM full_date)::integer])""")
+
+for number,entity,nk in [(55,'genre','genre_nk'),(56,'company','company_nk'),
+                          (57,'country','country_code'),(58,'keyword','keyword_nk')]:
+    plural={'genre':'genres','company':'companies','country':'countries','keyword':'keywords'}[entity]
+    add(f'DW{number}','Bridge '+entity+' giữ đúng tập liên kết nguồn (hai chiều)',f"""
+    WITH expected AS (SELECT DISTINCT movie_nk,{nk} FROM staging.stg_movie_{plural}),
+    actual AS (SELECT m.movie_nk,d.{nk} FROM dds.bridge_movie_{entity} b
+       JOIN dds.dim_movie m USING(movie_sk) JOIN dds.dim_{entity} d USING({entity}_sk))
+    SELECT 'missing' AS problem,* FROM (SELECT * FROM expected EXCEPT SELECT * FROM actual) a
+    UNION ALL SELECT 'unexpected',* FROM (SELECT * FROM actual EXCEPT SELECT * FROM expected) b
+    """,section='3.2')
+
+add('DW59','dim_movie giữ đúng title/original_title/status nguồn',"""
+SELECT s.movie_nk FROM staging.stg_tmdb_movies s JOIN dds.dim_movie m USING(movie_nk)
+WHERE m.title IS DISTINCT FROM s.title
+ OR m.original_title IS DISTINCT FROM s.original_title
+ OR m.status IS DISTINCT FROM s.movie_status::varchar(50)""",section='3.2')

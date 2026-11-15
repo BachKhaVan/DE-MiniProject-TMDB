@@ -2,7 +2,7 @@
 from pathlib import Path
 import json,subprocess,shutil,os
 import pytest
-from core import ROOT,register,record,blocked,dbt_source_fingerprint
+from core import ROOT,register,record,blocked,dbt_source_fingerprint,dbt_executable
 
 DESCRIPTIONS={
  'DB01':('Đúng 18 dbt models SQL (6 staging + 7 dim + 4 bridge + 1 fact)','18 SQL models theo từng nhóm'),
@@ -38,9 +38,17 @@ def test_dbt_structure(case_id,request):
         import csv
         files=['country_region.csv','keyword_theme_mapping.csv','language_name_mapping.csv']
         stats=[]
+        keys={'country_region.csv':('country_code','region'),
+              'keyword_theme_mapping.csv':('keyword_name','theme_group'),
+              'language_name_mapping.csv':('language_nk','language_name')}
         for f in files:
             with (p/'seeds'/f).open(encoding='utf-8-sig',newline='') as h:
-                rows=list(csv.DictReader(h))
+                reader=csv.DictReader(h);rows=list(reader)
+                assert set(keys[f]).issubset(reader.fieldnames or []),f'{f}: thiếu header mapping'
+            nk,label=keys[f]
+            values=[row[nk].strip().lower() for row in rows]
+            assert len(values)==len(set(values)) and all(values),f'{f}: trùng/rỗng natural key'
+            assert all(row[label] and row[label].strip() for row in rows),f'{f}: giá trị mapping rỗng'
             stats.append({'name':f,'rows':len(rows)})
         record(request,stats)
         assert all(x['rows']>0 for x in stats)
@@ -102,17 +110,31 @@ def test_dbt_structure(case_id,request):
         record(request,{'models_sql':len(existing),'documented':len(documented),'missing_models':missing})
         assert not missing,'Các model chưa được mô tả riêng: '+', '.join(missing)
     elif case_id=='DB08':
-        loc=shutil.which('dbt')
+        loc=dbt_executable()
         if loc is None:blocked('Không có dbt Core trên PATH môi trường đang chạy')
         record(request,{'found':True,'executable':Path(loc).name})
     elif case_id in ('DB09','DB10','DB11'):
-        runtime=ROOT/'test'/'acceptance'/'.runtime'
+        if os.getenv('TMDB_TEST_MODE')!='integration':
+            blocked('Build evidence thuộc DB isolated; chạy --mode integration để không gán kết quả sang warehouse chính')
+        runtime=Path(os.getenv('TMDB_RUNTIME_EVIDENCE_DIR',str(ROOT/'test/acceptance/.runtime')))
         result=runtime/'dbt_build_run_results.json'
         provenance=runtime/'dbt_build_provenance.json'
         if not result.is_file() or not provenance.is_file():blocked('Chưa thực hiện dbt build mới có provenance trong isolated; xem isolation.py dbt-build')
         meta=json.loads(provenance.read_text(encoding='utf8'))
         if meta.get('target')!='tmdb_test_warehouse':blocked('DBT build target không đúng database isolated')
         if meta.get('fingerprint')!=dbt_source_fingerprint():blocked('Model SQL/seed/macro/YML đã thay đổi sau isolated build; cần build lại')
+        comparison=runtime/'dbt_rebuild_comparison.json'
+        if not comparison.is_file():blocked('Thiếu snapshot nguồn của build/rebuild; chạy lại isolation.py dbt-build')
+        from core import connect_readonly,Blocked
+        from scenario import snapshot
+        try:
+            conn=connect_readonly()
+            try:current=snapshot(conn)
+            finally:conn.close()
+        except Blocked as error:blocked(str(error))
+        recorded=json.loads(comparison.read_text(encoding='utf8'))['after']['source']
+        if any(current[table]!=recorded[table] for table in ('stg_tmdb_movies','stg_tmdb_credits')):
+            blocked('Stage hiện tại khác nguồn đã build; phải build lại trước nghiệm thu')
         try:run=json.loads(result.read_text(encoding='utf8'))
         except ValueError:pytest.fail('dbt build artifact mới bị hỏng')
         statuses={str(x.get('status')):0 for x in run.get('results',[])}
@@ -132,8 +154,18 @@ def test_dbt_structure(case_id,request):
             record(request,{'missing':missing,'older_than_build':stale})
             assert not missing and not stale
         else:
-            successful=all(x.get('status') in ('pass','success','warn','skipped') for x in run.get('results',[]))
+            successful=all(x.get('status') in ('pass','success') for x in run.get('results',[]))
             record(request,{'statuses':statuses,'build_completed':successful},note='Chỉ là isolated dbt build; pipeline Mage có thể cần chạy trước')
             assert run.get('results') and successful
     else:
-        blocked('DB12: cần 2 snapshots natural key quanh rebuild và tái kiểm tra các FK; chưa có bằng chứng')
+        if os.getenv('TMDB_TEST_MODE')!='integration':blocked('DB12 chỉ kiểm chứng rebuild trên DB isolated')
+        path=Path(os.getenv('TMDB_RUNTIME_EVIDENCE_DIR',str(ROOT/'test/acceptance/.runtime')))/'dbt_rebuild_comparison.json'
+        if not path.is_file():blocked('Chạy isolation.py dbt-build để tạo before/after rebuild')
+        data=json.loads(path.read_text(encoding='utf8'))
+        if data.get('fingerprint')!=dbt_source_fingerprint():blocked('Source đã đổi sau rebuild')
+        before,after=data['before'],data['after']
+        for table in ('stg_tmdb_movies','stg_tmdb_credits'):
+            if before['source'][table]!=after['source'][table]:blocked('Stage đổi giữa hai lần build; không thể kiểm tính lặp trên cùng nguồn')
+        changes=[name for name in before['dds'] if before['dds'][name]!=after['dds'].get(name)]
+        record(request,{'changed_tables':changes,'tables':len(before['dds'])},note='Chỉ chứng minh cùng snapshot; không yêu cầu SK ổn định khi thêm NK mới')
+        assert before['dds'] and not changes,'DDS/SK thay đổi khi rebuild cùng dữ liệu'

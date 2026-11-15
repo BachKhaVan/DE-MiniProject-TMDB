@@ -1,5 +1,7 @@
 # Mage Integration — chỉ chạy trên DB cô lập, bằng pipeline thật
 
+> Hướng dẫn hiện hành: [HUONG_DAN_CHAY_TEST.md](../HUONG_DAN_CHAY_TEST.md). Snapshot after hiện bắt buộc --run-status và --mage-log; không chỉ run ID.
+
 **Không dùng `docker compose up` tại root trong lúc test integration. Không chạy incremental trên database `warehouse` demo.** Chỉ mở `http://127.0.0.1:16789` (port test), không phải cổng `6789` của ứng dụng chính.
 
 ## 1. Chuẩn bị và Full Load
@@ -17,7 +19,7 @@ Hãy kiểm tra có đủ CSV trong `data/raw/` **trước** `prepare`; vì dữ
 ```powershell
 python .\test\acceptance\scenario.py full_repeat before
 # Chạy tmdb_ingestion LẦN 2 trong Mage TEST và đợi cả hai exporter xong
-python .\test\acceptance\scenario.py full_repeat after --mage-run-id '<RUN_ID_THẬT>'
+python .\test\acceptance\scenario.py full_repeat after --mage-run-id '<RUN_ID_THẬT>' --run-status success --mage-log '<DUONG_DAN_LOG_THAT>'
 ```
 
 Test MI01 so sánh hash nội dung **cả 2 bảng**, không chỉ row count. `scenario.py` chỉ SELECT từ DB isolated; không tự chạy Mage. Dấu `<RUN_ID_THẬT>` phải thay bằng ID nhìn thấy ở Mage; không điền giả.
@@ -41,7 +43,7 @@ Ví dụ cú pháp cho từng case (thay `batch_new` bằng tên cột thứ ba 
 ```powershell
 python .\test\acceptance\scenario.py batch_new before
 # Mở Mage TEST chạy tmdb_incremental, ghi run id và trạng thái các block
-python .\test\acceptance\scenario.py batch_new after --mage-run-id '<RUN_ID_THẬT>'
+python .\test\acceptance\scenario.py batch_new after --mage-run-id '<RUN_ID_THẬT>' --run-status success --mage-log '<DUONG_DAN_LOG_THAT>'
 ```
 
 **Đặc biệt với failure injection:**
@@ -52,7 +54,7 @@ python .\test\acceptance\scenario.py export_failure before
 python .\test\acceptance\isolation.py failure-on
 # Chạy tmdb_incremental trong Mage TEST, xác nhận block exporter FAIL trong Mage UI,
 # quan sát update_watermark có chạy hay không; ghi đúng run ID
-python .\test\acceptance\scenario.py export_failure after --mage-run-id '<RUN_ID_THẬT>'
+python .\test\acceptance\scenario.py export_failure after --mage-run-id '<RUN_ID_THẬT>' --run-status failed --mage-log '<DUONG_DAN_LOG_THAT>'
 python .\test\acceptance\isolation.py failure-off
 ```
 

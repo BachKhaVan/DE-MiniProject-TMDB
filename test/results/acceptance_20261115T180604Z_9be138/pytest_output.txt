@@ -1,0 +1,35 @@
+....................................F......                              [100%]
+================================== FAILURES ===================================
+_______________________ test_warehouse_invariant[DW39] ________________________
+
+case_id = 'DW39'
+request = <FixtureRequest for <Function test_warehouse_invariant[DW39]>>
+ro_db = <psycopg.Connection [INTRANS] (host=127.0.0.1 port=55432 user=tmdb_test_user database=tmdb_test_warehouse) at 0x1731f9951c0>
+
+    @pytest.mark.m33
+    @pytest.mark.readonly
+    @pytest.mark.parametrize('case_id',[k for k in SQL if CASES[k]['section']=='3.3'],ids=lambda x:x)
+    def test_warehouse_invariant(case_id,request,ro_db):
+>       report_check(request,ro_db,SQL[case_id],case_id)
+
+test_33_warehouse.py:10: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request = <FixtureRequest for <Function test_warehouse_invariant[DW39]>>
+conn = <psycopg.Connection [INTRANS] (host=127.0.0.1 port=55432 user=tmdb_test_user database=tmdb_test_warehouse) at 0x1731f9951c0>
+sql = "\nSELECT bridge_type, sum_allocated, sum_fact FROM (\n SELECT 'genre' AS bridge_type,\n (SELECT sum(b.weight_factor*f...sk) WHERE f.is_finance_valid=1)\n ) a WHERE sum_allocated IS NULL OR sum_fact IS NULL OR abs(sum_allocated-sum_fact)>1"
+label = 'DW39'
+
+    def report_check(request, conn, sql, label):
+        import pytest
+        try: n,rows=violation_rows(conn,sql)
+        except Blocked as e: blocked(str(e))
+        record(request,{'violations':n,'samples':rows},note=label)
+>       assert n==0, f'{label}: {n} vi phạm; mẫu {json.dumps(rows,ensure_ascii=False,default=str)[:1200]}'
+               ^^^^
+E       AssertionError: DW39: 2 vi phạm; mẫu [{"bridge_type": "country", "sum_allocated": 260220306819.6707, "sum_fact": 260220306821}, {"bridge_type": "genre", "sum_allocated": 260220306810.52356, "sum_fact": 260220306821}]
+
+core.py:91: AssertionError
+=========================== short test summary info ===========================
+FAILED test_33_warehouse.py::test_warehouse_invariant[DW39] - AssertionError:...
+1 failed, 42 passed in 5.59s

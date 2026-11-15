@@ -1,0 +1,24 @@
+{
+  "id": "BI10",
+  "query": "\nSELECT l.language_group,\n count(DISTINCT f.movie_sk) FILTER(WHERE f.vote_count>=100 AND f.vote_average IS NOT NULL) AS movies_votes_100,\n count(DISTINCT f.movie_sk) FILTER(WHERE f.vote_count>=1000 AND f.vote_average IS NOT NULL) AS movies_votes_1000,\n count(DISTINCT f.movie_sk) FILTER(WHERE f.vote_count>=1000 AND f.vote_average IS NOT NULL AND f.is_finance_valid=1) AS valid_movies_votes_1000\nFROM dds.fact_movie f JOIN dds.dim_language l USING(language_sk)\nGROUP BY l.language_group ORDER BY l.language_group",
+  "column_names": [
+    "language_group",
+    "movies_votes_100",
+    "movies_votes_1000",
+    "valid_movies_votes_1000"
+  ],
+  "rows": [
+    {
+      "language_group": "English",
+      "movies_votes_100": 3018,
+      "movies_votes_1000": 912,
+      "valid_movies_votes_1000": 899
+    },
+    {
+      "language_group": "Non-English",
+      "movies_votes_100": 144,
+      "movies_votes_1000": 12,
+      "valid_movies_votes_1000": 12
+    }
+  ]
+}

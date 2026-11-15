@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS dds.fact_movie (
 CREATE TABLE IF NOT EXISTS dds.bridge_movie_genre (
     movie_sk integer NOT NULL REFERENCES dds.dim_movie (movie_sk),
     genre_sk integer NOT NULL REFERENCES dds.dim_genre (genre_sk),
-    weight_factor decimal(18, 10) NOT NULL,
+    weight_factor decimal(38, 20) NOT NULL,
     PRIMARY KEY (movie_sk, genre_sk)
 );
 
@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS dds.bridge_movie_genre (
 CREATE TABLE IF NOT EXISTS dds.bridge_movie_company (
     movie_sk integer NOT NULL REFERENCES dds.dim_movie (movie_sk),
     company_sk integer NOT NULL REFERENCES dds.dim_company (company_sk),
-    weight_factor decimal(18, 10) NOT NULL,
+    weight_factor decimal(38, 20) NOT NULL,
     PRIMARY KEY (movie_sk, company_sk)
 );
 
@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS dds.bridge_movie_company (
 CREATE TABLE IF NOT EXISTS dds.bridge_movie_country (
     movie_sk integer NOT NULL REFERENCES dds.dim_movie (movie_sk),
     country_sk integer NOT NULL REFERENCES dds.dim_country (country_sk),
-    weight_factor decimal(18, 10) NOT NULL,
+    weight_factor decimal(38, 20) NOT NULL,
     PRIMARY KEY (movie_sk, country_sk)
 );
 

@@ -169,3 +169,8 @@ for id,(name,sql) in EXTRA.items():
  register(id,'3.4',name,'SQL độc lập tính được giá trị tham chiếu cho UI; chưa chứng minh DAX đúng',
  category='Quy tắc project',input_data='Read-only dds (current snapshot)',
  steps='SELECT theo filter; ghi đầy đủ kết quả vào queries/<ID>.json',demo=id=='BI10')
+
+# A SELECT producing rows is reference evidence, not a passed DAX comparison.
+from core import CASES
+for case_id in QUERIES:
+ CASES[case_id]['observation']=True

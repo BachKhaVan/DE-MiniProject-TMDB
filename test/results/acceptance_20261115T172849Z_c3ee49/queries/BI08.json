@@ -1,0 +1,465 @@
+{
+  "id": "BI08",
+  "query": "\nSELECT m.movie_nk,m.title,m.budget_band,f.budget,f.revenue,f.profit,f.roi\nFROM dds.fact_movie f JOIN dds.dim_movie m USING(movie_sk)\nWHERE f.is_finance_valid=1\nORDER BY f.budget,m.movie_nk LIMIT 50",
+  "column_names": [
+    "movie_nk",
+    "title",
+    "budget_band",
+    "budget",
+    "revenue",
+    "profit",
+    "roi"
+  ],
+  "rows": [
+    {
+      "movie_nk": 3082,
+      "title": "Modern Times",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "1",
+      "revenue": "8500000",
+      "profit": "8499999",
+      "roi": "8499999.0000"
+    },
+    {
+      "movie_nk": 22649,
+      "title": "A Farewell to Arms",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "4",
+      "revenue": "25",
+      "profit": "21",
+      "roi": "5.2500"
+    },
+    {
+      "movie_nk": 13006,
+      "title": "Split Second",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "7",
+      "revenue": "5",
+      "profit": "-2",
+      "roi": "-0.2857"
+    },
+    {
+      "movie_nk": 38415,
+      "title": "Bran Nue Dae",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "7",
+      "revenue": "7",
+      "profit": "0",
+      "roi": "0.0000"
+    },
+    {
+      "movie_nk": 11980,
+      "title": "The Prophecy",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "8",
+      "revenue": "16",
+      "profit": "8",
+      "roi": "1.0000"
+    },
+    {
+      "movie_nk": 78383,
+      "title": "Nurse 3-D",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "10",
+      "revenue": "10000000",
+      "profit": "9999990",
+      "roi": "999999.0000"
+    },
+    {
+      "movie_nk": 217708,
+      "title": "Of Horses and Men",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "10",
+      "revenue": "11",
+      "profit": "1",
+      "roi": "0.1000"
+    },
+    {
+      "movie_nk": 28932,
+      "title": "F.I.S.T.",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "11",
+      "revenue": "11",
+      "profit": "0",
+      "roi": "0.0000"
+    },
+    {
+      "movie_nk": 10397,
+      "title": "Angela's Ashes",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "25",
+      "revenue": "13",
+      "profit": "-12",
+      "roi": "-0.4800"
+    },
+    {
+      "movie_nk": 1613,
+      "title": "The 51st State",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "28",
+      "revenue": "14",
+      "profit": "-14",
+      "roi": "-0.5000"
+    },
+    {
+      "movie_nk": 16340,
+      "title": "Rugrats in Paris: The Movie",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "30",
+      "revenue": "103",
+      "profit": "73",
+      "roi": "2.4333"
+    },
+    {
+      "movie_nk": 1435,
+      "title": "Tarnation",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "218",
+      "revenue": "1162014",
+      "profit": "1161796",
+      "roi": "5329.3394"
+    },
+    {
+      "movie_nk": 51942,
+      "title": "I Married a Strange Person!",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "250",
+      "revenue": "203",
+      "profit": "-47",
+      "roi": "-0.1880"
+    },
+    {
+      "movie_nk": 14337,
+      "title": "Primer",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "7000",
+      "revenue": "424760",
+      "profit": "417760",
+      "roi": "59.6800"
+    },
+    {
+      "movie_nk": 79120,
+      "title": "Weekend",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "8000",
+      "revenue": "469947",
+      "profit": "461947",
+      "roi": "57.7434"
+    },
+    {
+      "movie_nk": 985,
+      "title": "Eraserhead",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "10000",
+      "revenue": "7000000",
+      "profit": "6990000",
+      "roi": "699.0000"
+    },
+    {
+      "movie_nk": 692,
+      "title": "Pink Flamingos",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "12000",
+      "revenue": "6000000",
+      "profit": "5988000",
+      "roi": "499.0000"
+    },
+    {
+      "movie_nk": 23827,
+      "title": "Paranormal Activity",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "15000",
+      "revenue": "193355800",
+      "profit": "193340800",
+      "roi": "12889.3867"
+    },
+    {
+      "movie_nk": 36095,
+      "title": "Cure",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "20000",
+      "revenue": "99000",
+      "profit": "79000",
+      "roi": "3.9500"
+    },
+    {
+      "movie_nk": 2292,
+      "title": "Clerks",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "27000",
+      "revenue": "3151130",
+      "profit": "3124130",
+      "roi": "115.7085"
+    },
+    {
+      "movie_nk": 42151,
+      "title": "Down Terrace",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "31192",
+      "revenue": "10000",
+      "profit": "-21192",
+      "roi": "-0.6794"
+    },
+    {
+      "movie_nk": 473,
+      "title": "Pi",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "60000",
+      "revenue": "3221152",
+      "profit": "3161152",
+      "roi": "52.6859"
+    },
+    {
+      "movie_nk": 2667,
+      "title": "The Blair Witch Project",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "60000",
+      "revenue": "248000000",
+      "profit": "247940000",
+      "roi": "4132.3333"
+    },
+    {
+      "movie_nk": 9372,
+      "title": "Super Size Me",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "65000",
+      "revenue": "28575078",
+      "profit": "28510078",
+      "roi": "438.6166"
+    },
+    {
+      "movie_nk": 47607,
+      "title": "Tiny Furniture",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "65000",
+      "revenue": "416498",
+      "profit": "351498",
+      "roi": "5.4077"
+    },
+    {
+      "movie_nk": 30497,
+      "title": "The Texas Chain Saw Massacre",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "85000",
+      "revenue": "30859000",
+      "profit": "30774000",
+      "roi": "362.0471"
+    },
+    {
+      "movie_nk": 18925,
+      "title": "Facing the Giants",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "100000",
+      "revenue": "10178331",
+      "profit": "10078331",
+      "roi": "100.7833"
+    },
+    {
+      "movie_nk": 55420,
+      "title": "Another Earth",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "100000",
+      "revenue": "1776935",
+      "profit": "1676935",
+      "roi": "16.7694"
+    },
+    {
+      "movie_nk": 70478,
+      "title": "The Stewardesses",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "100000",
+      "revenue": "27000000",
+      "profit": "26900000",
+      "roi": "269.0000"
+    },
+    {
+      "movie_nk": 115210,
+      "title": "Stitches",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "100000",
+      "revenue": "95000",
+      "profit": "-5000",
+      "roi": "-0.0500"
+    },
+    {
+      "movie_nk": 299245,
+      "title": "The Gallows",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "100000",
+      "revenue": "42664410",
+      "profit": "42564410",
+      "roi": "425.6441"
+    },
+    {
+      "movie_nk": 10331,
+      "title": "Night of the Living Dead",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "114000",
+      "revenue": "30000000",
+      "profit": "29886000",
+      "roi": "262.1579"
+    },
+    {
+      "movie_nk": 84355,
+      "title": "Your Sister's Sister",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "125000",
+      "revenue": "3200000",
+      "profit": "3075000",
+      "roi": "24.6000"
+    },
+    {
+      "movie_nk": 83,
+      "title": "Open Water",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "130000",
+      "revenue": "54667954",
+      "profit": "54537954",
+      "roi": "419.5227"
+    },
+    {
+      "movie_nk": 58882,
+      "title": "Snow Flower and the Secret Fan",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "134005",
+      "revenue": "1332231",
+      "profit": "1198226",
+      "roi": "8.9417"
+    },
+    {
+      "movie_nk": 5822,
+      "title": "Sweet Sweetback's Baadasssss Song",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "150000",
+      "revenue": "15200000",
+      "profit": "15050000",
+      "roi": "100.3333"
+    },
+    {
+      "movie_nk": 39141,
+      "title": "Tadpole",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "150000",
+      "revenue": "2891288",
+      "profit": "2741288",
+      "roi": "18.2753"
+    },
+    {
+      "movie_nk": 1779,
+      "title": "Roger & Me",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "160000",
+      "revenue": "6706368",
+      "profit": "6546368",
+      "roi": "40.9148"
+    },
+    {
+      "movie_nk": 5723,
+      "title": "Once",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "160000",
+      "revenue": "20710513",
+      "profit": "20550513",
+      "roi": "128.4407"
+    },
+    {
+      "movie_nk": 21334,
+      "title": "Children of Heaven",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "180000",
+      "revenue": "900000",
+      "profit": "720000",
+      "roi": "4.0000"
+    },
+    {
+      "movie_nk": 391,
+      "title": "A Fistful of Dollars",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "200000",
+      "revenue": "14500000",
+      "profit": "14300000",
+      "roi": "71.5000"
+    },
+    {
+      "movie_nk": 10218,
+      "title": "Swingers",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "200000",
+      "revenue": "4505922",
+      "profit": "4305922",
+      "roi": "21.5296"
+    },
+    {
+      "movie_nk": 43595,
+      "title": "She Done Him Wrong",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "200000",
+      "revenue": "2200000",
+      "profit": "2000000",
+      "roi": "10.0000"
+    },
+    {
+      "movie_nk": 54897,
+      "title": "The Grace Card",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "200000",
+      "revenue": "2295733",
+      "profit": "2095733",
+      "roi": "10.4787"
+    },
+    {
+      "movie_nk": 35073,
+      "title": "The Beast from 20,000 Fathoms",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "210000",
+      "revenue": "5000000",
+      "profit": "4790000",
+      "roi": "22.8095"
+    },
+    {
+      "movie_nk": 9367,
+      "title": "El Mariachi",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "220000",
+      "revenue": "2040920",
+      "profit": "1820920",
+      "roi": "8.2769"
+    },
+    {
+      "movie_nk": 139948,
+      "title": "Burn",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "225000",
+      "revenue": "111300",
+      "profit": "-113700",
+      "roi": "-0.5053"
+    },
+    {
+      "movie_nk": 18533,
+      "title": "Bronson",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "230000",
+      "revenue": "2260712",
+      "profit": "2030712",
+      "roi": "8.8292"
+    },
+    {
+      "movie_nk": 3060,
+      "title": "The Big Parade",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "245000",
+      "revenue": "22000000",
+      "profit": "21755000",
+      "roi": "88.7959"
+    },
+    {
+      "movie_nk": 431,
+      "title": "Cube",
+      "budget_band": "Dưới 1 triệu USD",
+      "budget": "250000",
+      "revenue": "501818",
+      "profit": "251818",
+      "roi": "1.0073"
+    }
+  ]
+}

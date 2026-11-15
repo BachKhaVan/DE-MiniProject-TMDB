@@ -6,7 +6,7 @@ from core import ROOT,register,record,blocked
 
 DESCRIPTIONS={
  'PB01':('PBIX là file có thể đọc được','PBIX zip hợp lệ và có report definition'),
- 'PB02':('Có tối thiểu hai trang Dashboard','Chính xác 4 trang được liệt kê trong report pages metadata'),
+ 'PB02':('Có tối thiểu hai trang Dashboard','Ít nhất 2 trang theo đề; ghi nhận 4 trang là trạng thái báo cáo'),
  'PB03':('Mỗi trang có ít nhất một biểu đồ','Số visual JSON > 0 trên từng trang'),
  'PB04':('Report có tham chiếu measure DAX','Visual query sử dụng measure references, không chứng minh đúng công thức'),
  'PB05':('Overview có các KPI chính','Dấu vết các measure KPI trong visual metadata'),
@@ -68,9 +68,11 @@ def test_powerbi_metadata_and_manual(case_id,request):
         record(request,{'zip_readable':True,'has_pbir':True,'page_count':len(pages)})
     elif case_id=='PB02':
         record(request,{'page_count':len(pages),'names':[p['name'] for p in pages]})
-        assert len(pages)==4,f'Đếm thực tế {len(pages)} trang'
+        assert len(pages)>=2,f'Đếm thực tế {len(pages)} trang'
     elif case_id=='PB03':
-        found={p['name']:len(p['visuals']) for p in pages}
+        decorative={'slicer','textbox','shape','image','actionButton','pageNavigator','bookmarkNavigator'}
+        found={p['name']:sum(v.get('visual',{}).get('visualType') not in decorative
+                            and bool(v.get('visual',{}).get('visualType')) for v in p['visuals']) for p in pages}
         record(request,found)
         assert found and all(n>0 for n in found.values())
     elif case_id=='PB04':
