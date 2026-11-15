@@ -1,0 +1,32 @@
+# Dedicated and independent Compose stack. Never combine this with root compose.yaml.
+name: tmdb_test_acceptance
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: tmdb_test_warehouse
+      POSTGRES_USER: tmdb_test_user
+      POSTGRES_PASSWORD: ${TMDB_TEST_PASSWORD:?Generate isolated env first}
+    ports:
+      - '127.0.0.1:55432:5432'
+    volumes:
+      - tmdb_test_acceptance_pg_data:/var/lib/postgresql/data
+      - ../../postgres/init/01_init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL','pg_isready -U tmdb_test_user -d tmdb_test_warehouse']
+      interval: 5s
+      retries: 12
+  mage:
+    image: mageai/mageai:latest
+    environment:
+      USER_CODE_PATH: /home/src/mage_pipeline
+    ports:
+      - '127.0.0.1:16789:6789'
+    volumes:
+      - ./.runtime/workspace:/home/src
+    depends_on:
+      postgres:
+        condition: service_healthy
+volumes:
+  tmdb_test_acceptance_pg_data:
+    name: tmdb_test_acceptance_pg_data

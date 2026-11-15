@@ -1,0 +1,224 @@
+ssssssss.........FFFssssssssssss.......sssssFsssssssssssssssssssssssssss [ 51%]
+sssssssssssssssssssssssssss......ssssssssssssssssssssssssssssssssss      [100%]
+=================================== FAILURES ===================================
+__________________________ test_pipeline_risks[MG18] ___________________________
+
+case_id = 'MG18'
+request = <FixtureRequest for <Function test_pipeline_risks[MG18]>>
+
+    @pytest.mark.m31
+    @pytest.mark.readonly
+    @pytest.mark.parametrize('case_id',['MG17','MG18','MG19','MG20'],ids=['MG17','MG18','MG19','MG20'])
+    def test_pipeline_risks(case_id,request):
+        if case_id in ('MG17','MG18'):
+            try: import yaml
+            except ImportError:blocked('Chưa cài PyYAML')
+            fn='tmdb_ingestion' if case_id=='MG17' else 'tmdb_incremental'
+            p=ROOT/'mage_pipeline'/'pipelines'/fn/'metadata.yaml'
+            if not p.is_file():blocked('Thiếu metadata '+fn)
+            blocks={b['uuid']:b for b in yaml.safe_load(p.read_text(encoding='utf8'))['blocks']}
+            if case_id=='MG17':
+                expected={'clean_movies_data':['load_tmdb_movies'],
+                    'export_movies_to_postgres':['clean_movies_data'],
+                    'clean_credits_data':['load_tmdb_credits'],
+                    'export_credits_to_postgres':['clean_credits_data']}
+                errors=[f'{k}: upstream={blocks.get(k,{}).get("upstream_blocks")}' for k,v in expected.items() if blocks.get(k,{}).get('upstream_blocks')!=v]
+            else:
+                actual=blocks.get('update_watermark',{}).get('upstream_blocks',[])
+                errors=[] if 'export_incremental_stage' in actual else [f'upstream hiện tại = {actual}, thiếu exporter']
+            record(request,{'pipeline':fn,'errors':errors})
+>           assert not errors, '; '.join(errors)
+E           AssertionError: upstream hiện tại = ['get_watermark'], thiếu exporter
+E           assert not ["upstream hiện tại = ['get_watermark'], thiếu exporter"]
+
+test_31_mage.py:135: AssertionError
+__________________________ test_pipeline_risks[MG19] ___________________________
+
+case_id = 'MG19'
+request = <FixtureRequest for <Function test_pipeline_risks[MG19]>>
+
+    @pytest.mark.m31
+    @pytest.mark.readonly
+    @pytest.mark.parametrize('case_id',['MG17','MG18','MG19','MG20'],ids=['MG17','MG18','MG19','MG20'])
+    def test_pipeline_risks(case_id,request):
+        if case_id in ('MG17','MG18'):
+            try: import yaml
+            except ImportError:blocked('Chưa cài PyYAML')
+            fn='tmdb_ingestion' if case_id=='MG17' else 'tmdb_incremental'
+            p=ROOT/'mage_pipeline'/'pipelines'/fn/'metadata.yaml'
+            if not p.is_file():blocked('Thiếu metadata '+fn)
+            blocks={b['uuid']:b for b in yaml.safe_load(p.read_text(encoding='utf8'))['blocks']}
+            if case_id=='MG17':
+                expected={'clean_movies_data':['load_tmdb_movies'],
+                    'export_movies_to_postgres':['clean_movies_data'],
+                    'clean_credits_data':['load_tmdb_credits'],
+                    'export_credits_to_postgres':['clean_credits_data']}
+                errors=[f'{k}: upstream={blocks.get(k,{}).get("upstream_blocks")}' for k,v in expected.items() if blocks.get(k,{}).get('upstream_blocks')!=v]
+            else:
+                actual=blocks.get('update_watermark',{}).get('upstream_blocks',[])
+                errors=[] if 'export_incremental_stage' in actual else [f'upstream hiện tại = {actual}, thiếu exporter']
+            record(request,{'pipeline':fn,'errors':errors})
+            assert not errors, '; '.join(errors)
+        elif case_id=='MG19':
+            t=(ROOT/'mage_pipeline/data_loaders/load_new_batch.py').read_text(encoding='utf8')
+            record(request,{'loader_uses_lset_or_cet':bool(re.search(r'\b(lset|cet)\b',t,re.I))})
+>           assert re.search(r'\b(lset|cet)\b',t,re.I),'Loader chỉ đọc nguyên batch CSV, không dùng LSET/CET'
+E           AssertionError: Loader chỉ đọc nguyên batch CSV, không dùng LSET/CET
+E           assert None
+E            +  where None = <function search at 0x7f748e734720>('\\b(lset|cet)\\b', 'import pandas as pd\n\nif \'data_loader\' not in globals():\n    from mage_ai.data_preparation.decorators import data...    df = pd.read_csv(\'data/raw/tmdb_new_batch.csv\')\n    print(f"Đã đọc {len(df)} dòng dữ liệu mới.")\n    return df', re.IGNORECASE)
+E            +    where <function search at 0x7f748e734720> = re.search
+E            +    and   re.IGNORECASE = re.I
+
+test_31_mage.py:139: AssertionError
+__________________________ test_pipeline_risks[MG20] ___________________________
+
+case_id = 'MG20'
+request = <FixtureRequest for <Function test_pipeline_risks[MG20]>>
+
+    @pytest.mark.m31
+    @pytest.mark.readonly
+    @pytest.mark.parametrize('case_id',['MG17','MG18','MG19','MG20'],ids=['MG17','MG18','MG19','MG20'])
+    def test_pipeline_risks(case_id,request):
+        if case_id in ('MG17','MG18'):
+            try: import yaml
+            except ImportError:blocked('Chưa cài PyYAML')
+            fn='tmdb_ingestion' if case_id=='MG17' else 'tmdb_incremental'
+            p=ROOT/'mage_pipeline'/'pipelines'/fn/'metadata.yaml'
+            if not p.is_file():blocked('Thiếu metadata '+fn)
+            blocks={b['uuid']:b for b in yaml.safe_load(p.read_text(encoding='utf8'))['blocks']}
+            if case_id=='MG17':
+                expected={'clean_movies_data':['load_tmdb_movies'],
+                    'export_movies_to_postgres':['clean_movies_data'],
+                    'clean_credits_data':['load_tmdb_credits'],
+                    'export_credits_to_postgres':['clean_credits_data']}
+                errors=[f'{k}: upstream={blocks.get(k,{}).get("upstream_blocks")}' for k,v in expected.items() if blocks.get(k,{}).get('upstream_blocks')!=v]
+            else:
+                actual=blocks.get('update_watermark',{}).get('upstream_blocks',[])
+                errors=[] if 'export_incremental_stage' in actual else [f'upstream hiện tại = {actual}, thiếu exporter']
+            record(request,{'pipeline':fn,'errors':errors})
+            assert not errors, '; '.join(errors)
+        elif case_id=='MG19':
+            t=(ROOT/'mage_pipeline/data_loaders/load_new_batch.py').read_text(encoding='utf8')
+            record(request,{'loader_uses_lset_or_cet':bool(re.search(r'\b(lset|cet)\b',t,re.I))})
+            assert re.search(r'\b(lset|cet)\b',t,re.I),'Loader chỉ đọc nguyên batch CSV, không dùng LSET/CET'
+        else:
+            t=(ROOT/'mage_pipeline/data_exporters/export_incremental_stage.py').read_text(encoding='utf8')
+            safe=bool(re.search(r'upsert|on\s+conflict|drop_duplicates|unique\s*\(',t,re.I))
+            record(request,{'deduplication_in_exporter':safe})
+>           assert safe,'Exporter append không thấy cơ chế chống trùng ở cấp exporter; cần thực nghiệm replay isolated'
+E           AssertionError: Exporter append không thấy cơ chế chống trùng ở cấp exporter; cần thực nghiệm replay isolated
+E           assert False
+
+test_31_mage.py:144: AssertionError
+___________________________ test_dbt_structure[DB13] ___________________________
+
+case_id = 'DB13'
+request = <FixtureRequest for <Function test_dbt_structure[DB13]>>
+
+    @pytest.mark.m32
+    @pytest.mark.readonly
+    @pytest.mark.parametrize('case_id',['DB01','DB02','DB03','DB04','DB05','DB06','DB07','DB08','DB09','DB10','DB11','DB12','DB13'],ids=lambda x:x)
+    def test_dbt_structure(case_id,request):
+        p=ROOT/'dbt_transform'
+        if case_id=='DB01':
+            names={k:sorted(x.stem for x in (p/'models'/k).glob('*.sql')) for k in ('staging','dimensions','bridge','facts')}
+            counts={k:len(v) for k,v in names.items()}
+            record(request,{'counts':counts,'files':names})
+            assert counts==dict(staging=6,dimensions=7,bridge=4,facts=1)
+        elif case_id=='DB02':
+            import csv
+            files=['country_region.csv','keyword_theme_mapping.csv','language_name_mapping.csv']
+            stats=[]
+            for f in files:
+                with (p/'seeds'/f).open(encoding='utf-8-sig',newline='') as h:
+                    rows=list(csv.DictReader(h))
+                stats.append({'name':f,'rows':len(rows)})
+            record(request,stats)
+            assert all(x['rows']>0 for x in stats)
+        elif case_id in ('DB03','DB04','DB07'):
+            try: import yaml
+            except ImportError:blocked('Cần PyYAML')
+            source=(p/'models/staging/sources.yml').read_text(encoding='utf8')
+            schema=(p/'models/schema.yml').read_text(encoding='utf8')
+            cfg=(p/'dbt_project.yml').read_text(encoding='utf8')
+            if case_id=='DB03':
+                doc=yaml.safe_load(schema)
+                models=doc.get('models',[])
+                tokens=[t for t in ('not_null','unique','relationships') if t in schema]
+                record(request,{'models_described':len(models),'test_families':tokens})
+                assert len(models)>=14 and len(tokens)==3
+            elif case_id=='DB04':
+                data=yaml.safe_load(source)
+                sources=data.get('sources',[])
+                found=sorted(t['name'] for s in sources for t in s.get('tables',[]) if s.get('name')=='tmdb_stage')
+                record(request,{'tables':found,'schema':sources[0].get('schema') if sources else None})
+                assert found==['stg_tmdb_credits','stg_tmdb_movies'] and sources[0].get('schema')=='stage'
+            else:
+                mapping={'staging':'+materialized: view','dimensions':'+materialized: table','facts':'+post-hook:', 'staging_schema':'+schema: staging','dds_schema':'+schema: dds'}
+                missing=[k for k,v in mapping.items() if v not in cfg]
+                record(request,{'missing':missing})
+                assert not missing
+        elif case_id in ('DB05','DB06'):
+            base=p/'target'; manifest=base/'manifest.json'
+            if not manifest.exists():blocked('Thiếu target/manifest.json; tạo artifacts dưới test/results rồi đánh giá')
+            try:
+                m=json.loads(manifest.read_text(encoding='utf8'))
+            except (ValueError,OSError):pytest.fail('manifest.json lỗi định dạng')
+            if case_id=='DB06':
+                other=[base/q for q in ('catalog.json','index.html','run_results.json')]
+                availability={q.name:q.exists() for q in other}
+                if availability['catalog.json']:
+                    try:json.loads((base/'catalog.json').read_text(encoding='utf8'))
+                    except ValueError:pytest.fail('catalog.json không phải JSON hợp lệ')
+                record(request,{'artifacts':availability},note='Đây là bằng chứng có sẵn trong ZIP, không phải docs generate mới')
+                assert all(availability.values()),f'Thiếu: {[k for k,v in availability.items() if not v]}'
+            else:
+                graph={key:set(v.get('depends_on',{}).get('nodes',[])) for key,v in m.get('nodes',{}).items() if key.startswith('model.')}
+                state={}
+                def dfs(u):
+                    if state.get(u)==1:raise AssertionError('Cycle tại '+u)
+                    if state.get(u)==2:return
+                    state[u]=1
+                    for dep in graph[u]:
+                        if dep in graph:dfs(dep)
+                    state[u]=2
+                for u in graph:dfs(u)
+                record(request,{'models_in_old_manifest':len(graph),'source_node_count':len(m.get('sources',{}))},note='Đồ thị của artifact cũ, không phải build mới')
+                assert len(graph)==18 and len(m.get('sources',{}))==2
+        elif case_id=='DB13':
+            import yaml
+            documented={x['name'] for x in yaml.safe_load((p/'models/schema.yml').read_text(encoding='utf8'))['models']}
+            existing={x.stem for x in (p/'models').glob('**/*.sql')}
+            missing=sorted(existing-documented)
+            record(request,{'models_sql':len(existing),'documented':len(documented),'missing_models':missing})
+>           assert not missing,'Các model chưa được mô tả riêng: '+', '.join(missing)
+E           AssertionError: Các model chưa được mô tả riêng: stg_movie_companies, stg_movie_countries, stg_movie_genres, stg_movie_keywords
+E           assert not ['stg_movie_companies', 'stg_movie_countries', 'stg_movie_genres', 'stg_movie_keywords']
+
+test_32_dbt.py:103: AssertionError
+=========================== short test summary info ============================
+SKIPPED [5] core.py:71: BLOCKED: Thiếu data/raw/tmdb_5000_movies.csv trong bản ZIP; thêm CSV TMDB của project
+SKIPPED [2] core.py:71: BLOCKED: Thiếu data/raw/tmdb_5000_credits.csv trong bản ZIP; thêm CSV TMDB của project
+SKIPPED [1] core.py:71: BLOCKED: Thiếu data/raw/tmdb_new_batch.csv trong bản ZIP; thêm CSV TMDB của project
+SKIPPED [4] test_31_mage.py:146: BLOCKED: Chưa cài psycopg: python -m pip install -r test/acceptance/requirements.txt
+SKIPPED [8] test_31_scenarios.py:23: SKIPPED: Chỉ chạy với --mode integration
+SKIPPED [1] core.py:71: BLOCKED: Không có dbt Core trên PATH môi trường đang chạy
+SKIPPED [3] core.py:71: BLOCKED: Chưa thực hiện dbt build mới có provenance trong isolated; xem isolation.py dbt-build
+SKIPPED [1] core.py:71: BLOCKED: DB12: cần 2 snapshots natural key quanh rebuild và tái kiểm tra các FK; chưa có bằng chứng
+SKIPPED [13] test_32_sql.py:6: BLOCKED: Chưa cài psycopg: python -m pip install -r test/acceptance/requirements.txt
+SKIPPED [5] test_33_negative.py:19: SKIPPED: Chỉ chạy với --mode integration
+SKIPPED [36] test_33_warehouse.py:6: BLOCKED: Chưa cài psycopg: python -m pip install -r test/acceptance/requirements.txt
+SKIPPED [16] core.py:71: BLOCKED: Không có semantic model/Power BI Desktop đang kết nối; dùng CHECKLIST_POWERBI.md, không suy từ PBIX Import
+SKIPPED [18] test_34_sql_reference.py:9: BLOCKED: Chưa cài psycopg: python -m pip install -r test/acceptance/requirements.txt
+FAILED test_31_mage.py::test_pipeline_risks[MG18] - AssertionError: upstream hiện tại = ['get_watermark'], thiếu exporter
+assert not ["upstream hiện tại = ['get_watermark'], thiếu exporter"]
+FAILED test_31_mage.py::test_pipeline_risks[MG19] - AssertionError: Loader chỉ đọc nguyên batch CSV, không dùng LSET/CET
+assert None
+ +  where None = <function search at 0x7f748e734720>('\\b(lset|cet)\\b', 'import pandas as pd\n\nif \'data_loader\' not in globals():\n    from mage_ai.data_preparation.decorators import data...    df = pd.read_csv(\'data/raw/tmdb_new_batch.csv\')\n    print(f"Đã đọc {len(df)} dòng dữ liệu mới.")\n    return df', re.IGNORECASE)
+ +    where <function search at 0x7f748e734720> = re.search
+ +    and   re.IGNORECASE = re.I
+FAILED test_31_mage.py::test_pipeline_risks[MG20] - AssertionError: Exporter append không thấy cơ chế chống trùng ở cấp exporter; cần thực nghiệm replay isolated
+assert False
+FAILED test_32_dbt.py::test_dbt_structure[DB13] - AssertionError: Các model chưa được mô tả riêng: stg_movie_companies, stg_movie_countries, stg_movie_genres, stg_movie_keywords
+assert not ['stg_movie_companies', 'stg_movie_countries', 'stg_movie_genres', 'stg_movie_keywords']
+4 failed, 22 passed, 113 skipped in 0.41s
