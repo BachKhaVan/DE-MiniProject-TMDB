@@ -10,12 +10,14 @@ if 'data_exporter' not in globals():
 @data_exporter
 def export_data_to_postgres(df: DataFrame, **kwargs) -> None:
     config_path = path.join(get_repo_path(), 'io_config.yaml')
+    
     with Postgres.with_config(ConfigFileLoader(config_path, 'default')) as loader:
         loader.export(
             df,
             'stage',
             'stg_tmdb_movies',
             index=False,
-            if_exists='append' # Lệnh append giúp nạp nối thêm, không xóa dữ liệu cũ
+            if_exists='append',
+            unique_conflict_method='UPDATE', # Bí quyết chống nạp trùng lặp
+            unique_constraints=['id']        # Khóa chính của bảng Movies
         )
-    print(f"✅ Đã nạp nối (append) thành công {len(df)} bộ phim mới vào kho!")
