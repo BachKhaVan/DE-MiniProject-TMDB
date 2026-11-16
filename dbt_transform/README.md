@@ -1,6 +1,6 @@
 # Giai đoạn 2 — dbt Transformation và DDS
 
-> Tài liệu này là hướng dẫn triển khai riêng cho Giai đoạn 2 trong `dbt_transform/README.md`. Tài liệu không thay thế và không yêu cầu sửa README tổng ở repository root.
+> Tài liệu này là hướng dẫn triển khai riêng cho Giai đoạn 2 trong `dbt_transform/README.md`. Trạng thái toàn project và danh mục bàn giao được cập nhật tại [README tổng](../README.md); hướng dẫn nghiệm thu ở [HUONG_DAN_CHAY_TEST.md](../test/HUONG_DAN_CHAY_TEST.md).
 >
 > **Kiến trúc đã thống nhất:** dbt là thành phần duy nhất materialize và quản lý vòng đời các bảng DDS. Docker chỉ tự động chạy `postgres/init/01_init.sql`. File `postgres/init/02_dds_schema.sql` được giữ làm DDL tham chiếu/Data Contract, **không được Docker tự động chạy và không chạy trước `dbt build`**.
 
@@ -886,7 +886,7 @@ Vì vậy:
 
 ## 13. Hạn chế và lưu ý vận hành
 
-1. **Incremental hiện là mô phỏng batch.** Theo mô tả Mage hiện tại, batch được append nguyên trạng, chưa lọc LSET và chưa deduplicate; nhánh cập nhật watermark không phụ thuộc vào kết quả exporter. Không mô tả pipeline này là retry-safe/production incremental nếu chưa sửa graph và kiểm thử lại.
+1. **Incremental theo batch đã được bổ sung.** Graph hiện là get_watermark → load_new_batch → export_incremental_stage → update_watermark. Exporter thêm bước tạo PRIMARY KEY (`id`) và cấu hình upsert; updater phụ thuộc exporter. Loader vẫn đọc nguyên CSV, chưa lọc LSET/CET. Kiểm replay/failure bằng log và snapshot thực trước khi khẳng định khả năng retry; xem [README Mage](../mage_pipeline/README_Ingestion.md). Sau nạp incremental, chạy dbt build để cập nhật DDS.
 2. **Dataset TMDB 5000 là snapshot tĩnh.** Các chỉ số popularity, vote average và vote count là ảnh chụp tại thời điểm thu thập, không phải chuỗi thời gian.
 3. **JSON nguồn cần được kiểm soát.** Các cột JSON đang là text trong raw staging. Nếu có JSON sai cú pháp hoặc sai cấu trúc, cần xem source tests và lỗi build thực tế; không âm thầm bỏ qua dữ liệu lỗi.
 4. **Mapping có phạm vi giới hạn.** Country/Keyword/Language cần được bổ sung khi nghiệp vụ yêu cầu độ bao phủ cao hơn.

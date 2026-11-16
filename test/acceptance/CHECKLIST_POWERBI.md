@@ -4,11 +4,11 @@
 
 ## 1. Các thao tác chung
 
-1. Mở `powerbi_dashboard/TMDB_Movie_Dashboard.pbix` bằng Power BI Desktop. Ghi ngày, thời gian, file đang mở, chế độ Import/DirectQuery bằng UI Data Source Settings. **Không coi số đang có trong Import là đã Refresh.**
+1. Mở `powerbi_dashboard/TMDB_Movie_Dashboard.pbix` bằng Power BI Desktop. Ghi ngày, thời gian, file đang mở, server/database trong Data Source Settings; kiểm Storage mode của bảng trong Model view để xác định Import/DirectQuery. **Không coi số đang có trong Import là đã Refresh.**
 2. Mở Model view, xem các bảng `fact_movie`, 7 `dim_*`, 4 `bridge_movie_*`, tham số `Allocation Mode`, `Min Votes`, `Min Movies`. Chụp relationship model: 3 quan hệ Fact–Dim, 4 đường đa trị qua Bridge, chiều filter và cardinality. Nếu không nhìn đủ, chia ảnh. Không suy luận hướng cross-filter từ màu đường nối.
 3. Mở Model view hoặc Tabular Editor / DAX Studio (nếu đã có), chụp hoặc xuất **công thức DAX thật** của Movie Count, Valid Movies, Total Revenue, Total Budget, Total Profit, ROI Overall, ROI Median, Pct Over Budget, Profit by Genre/Company/Country, Median Rating, Avg Runtime, Median Popularity. Nếu chỉ có tên measure trong PBIX thì ghi `BLOCKED (thiếu expression)`.
 4. Xác nhận bốn page hiển thị ở PBIX đã phân tích: **Overview**, **Financial drivers**, **Companies & Countries**, **Audience & Ratings**. Kiểm nội dung charts/card/slicer thực tế. Chụp tổng quan từng page và filter pane.
-5. Xem `Country=All`, `Year=All`, `Genre=All`, `Allocation Mode=Weighted`, Min valid movies = 5, Min votes = 100 (nếu visual có dùng). Chụp bộ lọc kèm KPI. Chạy `python test/acceptance/run.py --mode readonly --section 34` để có `BI01` và các `QxSQL`. Bảo đảm cùng nguồn/snapshot mới dùng kết quả SQL để đối chiếu.
+5. Xem `Country=All`, `Year=All`, `Genre=All`, `Allocation Mode=Weighted`, Min valid movies = 5, Min votes = 100 (nếu visual có dùng). Chụp bộ lọc kèm KPI. Chạy runner section 34 theo đúng nhánh integration/readonly ở phần 10.5 của [hướng dẫn](../HUONG_DAN_CHAY_TEST.md) để có `BI01` và các `QxSQL`. Bảo đảm cùng nguồn/snapshot mới dùng kết quả SQL để đối chiếu.
 6. Chụp Refresh thật: Home → Refresh → kiểm thông báo hoàn tất; ghi thời gian, sau đó xem KPI có khớp SQL từ DDS. Nếu không thể Refresh hoặc không có credential, để `PB12 BLOCKED`.
 
 ## 2. Checklist hành vi cốt lõi
@@ -28,7 +28,7 @@
 
 ## 3. Tám câu hỏi nghiệp vụ (quy tắc project, không áp đặt thành yêu cầu giảng viên)
 
-Mỗi Q phải đủ **4 bằng chứng**: trang/chart/measure nào trả lời; SQL tính lại từ `QxSQL`; giá trị Power BI cùng filter; đánh giá đủ các vế trong chính câu hỏi gốc. `QxSQL PASS` chỉ xác nhận SQL thực thi thành công, **không** làm `Qx PASS`.
+Mỗi Q phải đủ **4 bằng chứng**: trang/chart/measure nào trả lời; SQL tính lại từ `QxSQL`; giá trị Power BI cùng filter; đánh giá đủ các vế trong chính câu hỏi gốc. `QxSQL INFO` là kết quả SQL tham chiếu, **không** làm `Qx PASS`. Chỉ kết luận thủ công khi đã đối chiếu Power BI trên cùng nguồn và ngữ cảnh lọc.
 
 | Q | Trang/điểm cần xác nhận | Phép so và baseline cũ để tham khảo | Hình/actual / kết luận |
 |---|---|---|---|

@@ -143,7 +143,7 @@ Một số bài test gợi ý:
 - **Không commit** mật khẩu, `.env`, thông tin xác thực hoặc dữ liệu nhạy cảm. Kiểm tra các đường dẫn nguồn/metadata lưu trong PBIX trước khi chia sẻ.
 - Với file PBIX lớn, kiểm tra giới hạn dung lượng của dịch vụ Git đang sử dụng; nếu cần Git LFS thì thống nhất với nhóm trước khi commit.
 - Làm việc trên nhánh tính năng và mở pull request vào `develop` theo quy ước ở README gốc của repository.
-- Sau khi thêm PBIX, cập nhật **README gốc** (dòng trạng thái và cây thư mục) để không còn ghi rằng Power BI chưa được triển khai.
+- Trạng thái bàn giao và link video được quản lý tại [README tổng](../README.md). Kiểm thử SQL/DAX và nguồn DB chính/test theo [hướng dẫn test, phần 10.5](../test/HUONG_DAN_CHAY_TEST.md); điền bằng chứng UI vào [checklist Power BI](../test/acceptance/CHECKLIST_POWERBI.md).
 
 ## 9. Phạm vi hoàn thành
 

@@ -1,9 +1,35 @@
 # Local credentials and tool configuration
 .env
+.env.*
+!.env.example
+!.env.*.example
 profiles.yml
 io_config.yaml
 .venv/
+.venv_test/
+venv/
 .user.yml
+
+# Local editors and operating-system files
+/.vscode/
+/.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Python caches and local test/coverage output
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Isolated test workspace contains credentials and copied datasets
+/test/acceptance/.runtime/
 
 # dbt build artifacts
 target/
@@ -16,9 +42,25 @@ logs/
 /mage_pipeline/.file_versions/
 /mage_pipeline/**/__pycache__/
 *.py[cod]
-
+# Existing local preference: generated Markdown test reports
+REPORT.md
 # Local databases and logs
 *.db
 *.sqlite
 *.sqlite3
 *.log
+
+# Temporary files created by editors and Office
+*.tmp
+*.temp
+*.swp
+*.swo
+~$*
+
+# Power BI local cache/settings (keep PBIX and project source files)
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+**/.pbi/unappliedChanges.json
+
+# Keep submission documents, dashboard, dbt seeds and test evidence.
+# Do not ignore all PDF/DOCX/PBIX/CSV/JSON/XML files or test/results/.

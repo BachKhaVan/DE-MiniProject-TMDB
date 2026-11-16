@@ -1,3 +1,5 @@
+> **Ghi chú lịch sử — cập nhật 16/11/2026:** nội dung audit dưới đây phản ánh phiên bản tại thời điểm kiểm tra. Source hiện đã nối updater sau exporter, bổ sung bước tạo PK và cấu hình upsert. MG18 đã PASS trong report 3.1 `20261116T071641Z_03ce5c` đã đọc; MG19 hiện được phân loại INFO vì loader dùng batch tĩnh. Không dùng các kết luận cũ về hai nhánh độc lập/append không chống trùng làm mô tả phiên bản hiện tại. Xem [README Mage](../../mage_pipeline/README_Ingestion.md).
+
 # Pha 1 — Khảo sát từ ZIP, ma trận và ranh giới an toàn
 
 **Nguồn:** `DE-MiniProject-TMDB.zip` được người dùng cung cấp tại phiên chat ngày 15/11/2026. Không phải kết quả kết nối tới máy Windows hoặc PostgreSQL thực của người dùng.

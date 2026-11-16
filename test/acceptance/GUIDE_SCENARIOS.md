@@ -60,7 +60,7 @@ python .\test\acceptance\isolation.py failure-off
 
 `failure-on/off` chỉ tạo/xóa function và trigger có tên `tmdb_test_fail_insert` trên bảng **isolated**. Bất kể kết quả, luôn chạy `failure-off` sau kịch bản; nếu lỗi này không tạo được, ghi BLOCKED, không giả định injection thành công. Trước khi chạy lại Full Load, luôn tắt trigger.
 
-**Quan trọng:** `update_watermark` có nhánh riêng theo metadata và có thể chạy khác thời điểm với exporter. Để kiểm chứng fail thật, cần chụp cả run state/log và kết quả đọc `LSET` trước/sau. Snapshot/hàm SQL không tự chứng minh exporter đã fail.
+**Cập nhật graph:** `update_watermark` hiện là downstream của `export_incremental_stage`. MI07 kiểm hành vi runtime khi exporter lỗi; vẫn cần run state/log và LSET trước/sau, không suy ra kết quả failure-injection chỉ từ dependency trong YAML.
 
 ## 3. dbt isolated build/test/docs và negative control
 

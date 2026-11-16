@@ -2,6 +2,8 @@
 
 Giữ video trung thực: chỉ nói “đã kiểm chứng” khi có runtime + đường dẫn report; với `FAIL` giải thích lỗi đã quan sát; với `BLOCKED` nêu rõ cần thao tác gì. Thời lượng tùy bài, không bịa kết quả. Chuẩn bị PowerShell tại gốc repository; không quay terminal khi nhập password hoặc file `.env`/`profiles.yml`/`io_config.yaml`.
 
+**Link video chính thức:** [Thư mục video demo trên Google Drive](https://drive.google.com/drive/folders/1x6fNNB01GWwsOE6fa5XxfcngMb8h902G?usp=sharing). Chuẩn bị môi trường theo [hướng dẫn test, phần 10](../HUONG_DAN_CHAY_TEST.md); các cảnh dưới dùng DB test cô lập đã nạp/build thành công. Nếu quay PBIX kết nối DB chính, chạy SQL readonly với `.env` đúng nguồn theo phần 10.5, không so với DB test.
+
 ## Cảnh 1 — Giới thiệu kiến trúc (mục 3.1–3.4)
 
 - **Màn hình:** cây thư mục `mage_pipeline/`, `dbt_transform/models/`, `postgres/`, `powerbi_dashboard/`, `test/acceptance/` (không mở file secret).
@@ -11,11 +13,12 @@ Giữ video trung thực: chỉ nói “đã kiểm chứng” khi có runtime +
 ## Cảnh 2 — Kiểm tra môi trường
 
 ```powershell
-python --version
-python -m pytest --version
+$py = (Resolve-Path .\.venv\Scripts\python.exe).Path
+& $py --version
+& $py -m pytest --version
 docker compose version
-docker compose -p tmdb_test_acceptance -f .\test\acceptance\compose.isolated.yaml ps
-python .\test\acceptance\run.py --mode readonly --section all
+& $py .\test\acceptance\isolation.py ps
+& $py .\test\acceptance\run.py --mode integration --section all --approved
 ```
 
 - **Màn hình:** Python, Docker (nếu có), status Compose test, output test và đường dẫn `REPORT.md`.
@@ -24,8 +27,8 @@ python .\test\acceptance\run.py --mode readonly --section all
 ## Cảnh 3 — Mage 3.1
 
 1. **Màn hình:** Mage TEST ở `http://127.0.0.1:16789`, pipeline `tmdb_ingestion`, loader/transformer/exporter logs và run ID.
-2. **Lệnh:** `python .\test\acceptance\run.py --mode integration --section 31 --approved` **sau khi có stack isolated và run thật**. Nếu chưa sẵn, chạy `readonly` và giải thích mã nguồn.
-3. **Chỉ rõ:** Full Load dùng `replace`, Incremental dùng `append`; graph watermark có thể độc lập exporter. Với `MI01`, mở before/after hash; với `MI04`, nhìn duplicate count khi replay batch; với `MI07`, chụp block FAIL và watermark LSET.
+2. **Lệnh:** `& $py .\test\acceptance\run.py --mode integration --section 31 --approved` **sau khi có stack isolated và run thật**. Nếu chưa sẵn, dừng để chuẩn bị môi trường; không dùng kết quả từ DB khác thay cho run test.
+3. **Chỉ rõ:** Full Load dùng `replace`; Incremental thêm bước tạo PK và dùng `append` kèm upsert theo `id`. Graph hiện nối get_watermark → load_new_batch → exporter → update_watermark; loader vẫn đọc batch tĩnh. Với `MI01`, mở before/after hash; với `MI04`, nhìn duplicate count khi replay batch; với `MI07`, chụp block FAIL và watermark LSET.
 4. **Nói:** “Một test robust có thể FAIL dù project vẫn hỗ trợ mô phỏng incremental; tôi sẽ phân biệt yêu cầu đề và khả năng chống trùng bổ sung.”
 
 ## Cảnh 4 — dbt 3.2
@@ -34,10 +37,10 @@ python .\test\acceptance\run.py --mode readonly --section all
 - **Lệnh safe:**
 
 ```powershell
-python .\test\acceptance\run.py --mode readonly --section 32
+& $py .\test\acceptance\run.py --mode integration --section 32 --approved
 # Chỉ trên isolated, khi đã chạy Mage Full Load test:
-python .\test\acceptance\isolation.py dbt-build
-python .\test\acceptance\run.py --mode integration --section 32 --approved
+& $py .\test\acceptance\isolation.py dbt-build
+& $py .\test\acceptance\run.py --mode integration --section 32 --approved
 ```
 
 - **Expected:** `DB01–DB07` cho thấy cấu trúc; DB09–DB11 chỉ chứng minh run nếu `.runtime/dbt_build_run_results.json` sinh mới từ isolated build. `dbt docs generate` sinh riêng trong `.runtime/dbt_target/`.
@@ -46,10 +49,11 @@ python .\test\acceptance\run.py --mode integration --section 32 --approved
 ## Cảnh 5 — Data Warehouse 3.3 (ưu tiên bằng chứng định lượng)
 
 ```powershell
-python .\test\acceptance\run.py --mode readonly --section 33
+& $py .\test\acceptance\run.py --mode integration --section 33 --approved
 ```
 
-- **Màn hình:** `REPORT.md` và `result.json` các test DW01–DW49; nếu đủ isolated, chạy `NC01–NC05` để chứng minh các assertion bắt lỗi.
+- **Màn hình:** `REPORT.md` và `result.json` các test DW được chọn trong section 33 (đối chiếu MATRIX hiện tại); nếu đủ isolated, chạy `NC01–NC05` để chứng minh các assertion bắt lỗi.
+- **Trước các ví dụ BI:** chạy `& $py .\test\acceptance\run.py --mode integration --section 34 --approved` để sinh SQL tham chiếu trên DB test. Section 33 không sinh các kết quả BI này.
 - **Ví dụ thật:** đọc `BI05` lấy **`movie_nk`/`title` thực tế** của phim có nhiều Genre, chỉ rõ `weight_factor = 1/k`, tổng ≈1 và test DW18. Đọc `BI06` lấy phim có `budget/revenue IS NULL` và `is_finance_valid=0`; nói vì sao ROI/profit không được tính từ dữ liệu thiếu.
 - **Ví dụ KPI:** `BI01` tính total phim, valid phim, revenue, profit, ROI Overall, ROI Median bằng SQL độc lập; không đánh đồng ROI trung bình/trung vị.
 - **Nói:** “Các SQL assertions tìm dòng vi phạm, không chỉ chạy SELECT thành công. Negative control trên database isolated cố ý tạo dữ liệu sai rồi rollback, xác minh test có thực sự bắt được lỗi.”
@@ -69,10 +73,10 @@ python .\test\acceptance\run.py --mode readonly --section 33
 ## Cảnh 7 — Kết luận và xuất bằng chứng
 
 ```powershell
-python .\test\acceptance\run.py --mode readonly --section all
+& $py .\test\acceptance\run.py --mode integration --section all --approved
 # Mở file mới nhất trong test/results/acceptance_<run id>/REPORT.md
 ```
 
-- **Màn hình:** PASS/FAIL/BLOCKED/SKIPPED; ma trận requirement→test→bằng chứng; phần 14 trường của FAIL/BLOCKED; `result.json` và `junit.xml`.
+- **Màn hình:** PASS/FAIL/BLOCKED/SKIPPED/INFO; ma trận requirement→test→bằng chứng; phần 14 trường của FAIL/BLOCKED; `result.json` và `junit.xml`.
 - **Nói:** “Tôi đánh giá 3.1–3.4 theo yêu cầu bắt buộc riêng, 8 câu hỏi nghiệp vụ riêng, các kiểm tra độ bền riêng. Phần nào chưa chạy vì thiếu môi trường thì giữ BLOCKED, không suy luận từ log cũ.”
 - **Trước khi nộp video:** kiểm lại thông tin nhạy cảm trong ảnh/video (password, server address cá nhân, email, token). Không commit thư mục `.runtime/` vì có mật khẩu test; chỉ dùng báo cáo đã che secrets.

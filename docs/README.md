@@ -1,0 +1,19 @@
+# Tài liệu bàn giao TMDB — Nhóm 5
+
+Điểm bắt đầu và trạng thái triển khai: [README tổng](../README.md).
+
+| Tài liệu | Đường dẫn | Vai trò |
+|---|---|---|
+| Dashboard PDF | [TMDB_Movie_Dashboard.pdf](diagrams/TMDB_Movie_Dashboard.pdf) | Bản xem tĩnh, không thay PBIX tương tác |
+| Phụ lục C | [60 DAX](reports/Phu_luc_C_60_DAX.pdf) | Tài liệu công thức DAX |
+| Phụ lục D | [Kiểm chứng PostgreSQL–Power BI](reports/Phu_luc_D_Kiem_chung_PostgreSQL_PowerBI.pdf) | Bằng chứng đối chiếu đã biên soạn |
+| Data Contract | [Schema_Report.md](../Schema_Report.md) | Thiết kế mô hình |
+| Kiểm chứng DW | [DW_Verification_Report.md](../DW_Verification_Report.md) | Kết quả đã ghi nhận, cần đọc đúng snapshot |
+| Hướng dẫn test | [HUONG_DAN_CHAY_TEST.md](../test/HUONG_DAN_CHAY_TEST.md) | Quy trình tái chạy và lưu bằng chứng |
+| Kịch bản video | [VIDEO_DEMO.md](../test/acceptance/VIDEO_DEMO.md) | Nội dung quay demo |
+
+**Báo cáo tổng hợp bản nộp:** chưa có file PDF tổng hợp trong thư mục này. Bổ sung bản chốt vào `reports/` hoặc đặt liên kết chia sẻ tại README tổng; cập nhật bảng này sau khi có file.
+
+**Video demo:** [Thư mục video demo trên Google Drive](https://drive.google.com/drive/folders/1x6fNNB01GWwsOE6fa5XxfcngMb8h902G?usp=sharing). Liên kết cũng được ghi tại mục 1 của [README tổng](../README.md).
+
+Trước khi nộp, đối chiếu phiên bản báo cáo/PBIX/phụ lục với nguồn dữ liệu và report kiểm thử đã chọn. PDF dashboard không chứng minh Refresh hoặc tương tác. Không thay số liệu bằng baseline nếu nguồn hiện tại khác snapshot của tài liệu.
