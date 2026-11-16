@@ -12,7 +12,7 @@
 | Hướng dẫn test | [HUONG_DAN_CHAY_TEST.md](../test/HUONG_DAN_CHAY_TEST.md) | Quy trình tái chạy và lưu bằng chứng |
 | Kịch bản video | [VIDEO_DEMO.md](../test/acceptance/VIDEO_DEMO.md) | Nội dung quay demo |
 
-**Báo cáo tổng hợp bản nộp:** chưa có file PDF tổng hợp trong thư mục này. Bổ sung bản chốt vào `reports/` hoặc đặt liên kết chia sẻ tại README tổng; cập nhật bảng này sau khi có file.
+**Báo cáo tổng hợp bản nộp:** [BaoCao_TongHop_TMDB_Nhom5.pdf](reports/BaoCao_TongHop_TMDB_Nhom5.pdf). Thứ tự đọc và vai trò từng thư mục: [Hướng dẫn đọc tài liệu](../HUONG_DAN_DOC_TAI_LIEU.md).
 
 **Video demo:** [Thư mục video demo trên Google Drive](https://drive.google.com/drive/folders/1x6fNNB01GWwsOE6fa5XxfcngMb8h902G?usp=sharing). Liên kết cũng được ghi tại mục 1 của [README tổng](../README.md).
 

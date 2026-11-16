@@ -4,6 +4,8 @@ Mini project của **Nhóm 5** về phân tích hiệu quả tài chính và đ�
 
 **Cập nhật tài liệu: 16/11/2026.** Repository đã có pipeline ingestion, transformation, dashboard Power BI bốn trang và bộ kiểm thử nghiệm thu. Generative AI chưa triển khai. Các kết quả kiểm thử bên dưới là bằng chứng đã lưu của từng lượt chạy, không phải tuyên bố mọi yêu cầu đã đạt.
 
+**Dành cho giảng viên:** [Hướng dẫn đọc tài liệu và xem sản phẩm theo từng thư mục](HUONG_DAN_DOC_TAI_LIEU.md).
+
 ## 1. Tài liệu và sản phẩm bàn giao
 
 | Nội dung | Tệp / hướng dẫn |
@@ -23,7 +25,7 @@ Mini project của **Nhóm 5** về phân tích hiệu quả tài chính và đ�
 
 **Video demo:** [Thư mục video demo trên Google Drive](https://drive.google.com/drive/folders/1x6fNNB01GWwsOE6fa5XxfcngMb8h902G?usp=sharing).
 
-**Báo cáo tổng hợp bản nộp:** CHỜ BỔ SUNG FILE/LINK PDF CHỐT. Hiện `docs/reports/` có hai phụ lục ở bảng trên; không coi các phụ lục là báo cáo tổng hợp. Khi thêm báo cáo, cập nhật liên kết tại đây và [danh mục tài liệu](docs/README.md).
+**Báo cáo tổng hợp bản nộp:** [BaoCao_TongHop_TMDB_Nhom5.pdf](docs/reports/BaoCao_TongHop_TMDB_Nhom5.pdf), nộp kèm hai phụ lục C–D. Xem [danh mục tài liệu](docs/README.md).
 
 ## 2. Phạm vi triển khai hiện tại
 
