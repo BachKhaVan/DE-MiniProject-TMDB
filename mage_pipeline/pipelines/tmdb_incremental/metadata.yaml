@@ -5,7 +5,7 @@ blocks:
     file_source:
       path: data_loaders/get_watermark.py
   downstream_blocks:
-  - update_watermark
+  - load_new_batch
   executor_config: null
   executor_type: local_python
   has_callback: false
@@ -33,7 +33,7 @@ blocks:
   timeout: null
   type: data_exporter
   upstream_blocks:
-  - get_watermark
+  - export_incremental_stage
   uuid: update_watermark
 - all_upstream_blocks_executed: true
   color: null
@@ -51,14 +51,16 @@ blocks:
   status: executed
   timeout: null
   type: data_loader
-  upstream_blocks: []
+  upstream_blocks:
+  - get_watermark
   uuid: load_new_batch
 - all_upstream_blocks_executed: true
   color: null
   configuration:
     file_source:
       path: data_exporters/export_incremental_stage.py
-  downstream_blocks: []
+  downstream_blocks:
+  - update_watermark
   executor_config: null
   executor_type: local_python
   has_callback: false
