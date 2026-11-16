@@ -26,6 +26,8 @@ def load_data_from_postgres(*args, **kwargs):
             "No watermark found for pipeline 'tmdb_incremental'."
         )
 
+    kwargs['execution_date'] = datetime.now()
+    
     return {
         'lset': watermark.iloc[0]['lset'],
         'cet': datetime.now(),
