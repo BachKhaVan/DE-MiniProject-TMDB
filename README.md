@@ -25,6 +25,8 @@ Mini project của **Nhóm 5** về phân tích hiệu quả tài chính và đ�
 
 **Video demo:** [Thư mục video demo trên Google Drive](https://drive.google.com/drive/folders/1x6fNNB01GWwsOE6fa5XxfcngMb8h902G?usp=sharing).
 
+**LinkGit** [Git](https://github.com/BachKhaVan/DE-MiniProject-TMDB.git)
+
 **Báo cáo tổng hợp bản nộp:** [BaoCao_TongHop_TMDB_Nhom5.pdf](docs/reports/BaoCao_TongHop_TMDB_Nhom5.pdf), nộp kèm hai phụ lục C–D. Xem [danh mục tài liệu](docs/README.md).
 
 ## 2. Phạm vi triển khai hiện tại
@@ -182,16 +184,6 @@ Phần Power BI được nhóm xác nhận đã kiểm tra thủ công trong vid
 - Kiểm thử Power BI cần cùng nguồn, snapshot và bộ lọc. Refresh và tương tác phải có bằng chứng thật.
 - Generative AI chưa triển khai; không mô tả hạng mục này là đã hoàn thành.
 
-## 8. Checklist trước khi nộp
-
-- [x] Bổ sung link thư mục video ở phần 1.
-- [ ] Kiểm quyền xem video bằng phiên chưa đăng nhập tài khoản chủ sở hữu.
-- [ ] Thêm file/link báo cáo tổng hợp PDF chốt và đồng bộ số liệu với đúng snapshot.
-- [ ] Kiểm PBIX, PDF dashboard và các phụ lục là phiên bản muốn nộp.
-- [ ] Lưu report kiểm thử đã chọn và checklist/ảnh Power BI; giải thích FAIL/BLOCKED còn lại.
-- [ ] Ghi rõ phần AI chưa triển khai và giới hạn incremental.
-- [ ] Kiểm tài liệu hướng dẫn và liên kết; cung cấp nguồn dataset theo yêu cầu nộp, không đóng gói credentials.
-- [ ] Kiểm `git status` và diff trước khi commit; không đưa `.venv`, `.env`, `.runtime`, password hoặc CSV thô lên Git.
 
 Không dùng `docker compose down -v` để sửa lỗi kết nối. `isolation.py down` cũng xóa volume **test**; muốn giữ dữ liệu để tiếp tục demo/test thì chỉ dừng container.
 
