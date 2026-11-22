@@ -1,101 +1,78 @@
-# TMDB 5000 — Movie Data Warehouse & BI Analytics
+# TMDB 5000 — Movie Data Warehouse và Business Intelligence
 
-Mini project của **Nhóm 5** về phân tích hiệu quả tài chính và đặc điểm khán giả của các tác phẩm điện ảnh. Hệ thống sử dụng **Mage.ai → PostgreSQL → dbt → Power BI**, với mô hình kho dữ liệu gồm **7 Dimension, 4 Bridge và 1 Fact**.
+Repository của **Nhóm 5** triển khai pipeline dữ liệu và dashboard phân tích hiệu quả tài chính điện ảnh trên bộ dữ liệu TMDB 5000.
 
-**Cập nhật tài liệu: 16/11/2026.** Repository đã có pipeline ingestion, transformation, dashboard Power BI bốn trang và bộ kiểm thử nghiệm thu. Generative AI chưa triển khai. Các kết quả kiểm thử bên dưới là bằng chứng đã lưu của từng lượt chạy, không phải tuyên bố mọi yêu cầu đã đạt.
+**Luồng tổng:** `CSV TMDB -> Mage.ai -> PostgreSQL stage -> dbt staging/dds -> Power BI`
 
-**Dành cho giảng viên:** [Hướng dẫn đọc tài liệu và xem sản phẩm theo từng thư mục](HUONG_DAN_DOC_TAI_LIEU.md).
+> Nếu cô/anh chấm lần đầu, hãy mở [HUONG_DAN_CHAY_TONG_QUAT.md](HUONG_DAN_CHAY_TONG_QUAT.md). File này chỉ trình bày thứ tự chạy hệ thống, không cần tra từng README của Mage/dbt/Power BI.
 
-## 1. Tài liệu và sản phẩm bàn giao
+## 1. Sản phẩm bàn giao
 
-| Nội dung | Tệp / hướng dẫn |
+| Sản phẩm | Vị trí |
 |---|---|
-| Dashboard tương tác | [TMDB_Movie_Dashboard.pbix](powerbi_dashboard/TMDB_Movie_Dashboard.pbix) |
-| Mở, Refresh và sử dụng Power BI | [README Power BI](powerbi_dashboard/README.md) |
-| Bản PDF dashboard | [TMDB_Movie_Dashboard.pdf](docs/diagrams/TMDB_Movie_Dashboard.pdf) |
-| Phụ lục công thức DAX | [Phụ lục C — 60 DAX](docs/reports/Phu_luc_C_60_DAX.pdf) |
-| Phụ lục đối chiếu SQL–Power BI | [Phụ lục D — Kiểm chứng](docs/reports/Phu_luc_D_Kiem_chung_PostgreSQL_PowerBI.pdf) |
-| Thiết kế mô hình / Data Contract | [Schema_Report.md](Schema_Report.md) |
-| Kiểm chứng kho dữ liệu đã ghi nhận | [DW_Verification_Report.md](DW_Verification_Report.md) |
-| Cài đặt và vận hành dbt | [README dbt](dbt_transform/README.md) |
-| Chạy test từng bước 3.1–3.4 | [HUONG_DAN_CHAY_TEST.md](test/HUONG_DAN_CHAY_TEST.md), bắt đầu từ phần 10 |
-| Ma trận yêu cầu và test cases | [MATRIX.md](test/acceptance/MATRIX.md) |
-| Kiểm tra Power BI thủ công | [CHECKLIST_POWERBI.md](test/acceptance/CHECKLIST_POWERBI.md) |
-| Kịch bản quay demo | [VIDEO_DEMO.md](test/acceptance/VIDEO_DEMO.md) |
+| Dashboard tương tác | [powerbi_dashboard/TMDB_Movie_Dashboard.pbix](powerbi_dashboard/TMDB_Movie_Dashboard.pbix) |
+| Bản PDF dashboard | [docs/diagrams/TMDB_Movie_Dashboard.pdf](docs/diagrams/TMDB_Movie_Dashboard.pdf) |
+| Báo cáo tổng hợp | [docs/reports/BaoCao_TongHop_TMDB_Nhom5.pdf](docs/reports/BaoCao_TongHop_TMDB_Nhom5.pdf) |
+| Phụ lục công thức DAX | [docs/reports/Phu_luc_C_60_DAX.pdf](docs/reports/Phu_luc_C_60_DAX.pdf) |
+| Phụ lục kiểm chứng SQL-Power BI | [docs/reports/Phu_luc_D_Kiem_chung_PostgreSQL_PowerBI.pdf](docs/reports/Phu_luc_D_Kiem_chung_PostgreSQL_PowerBI.pdf) |
+| Data Contract / mô hình dữ liệu | [Schema_Report.md](Schema_Report.md) |
+| Kết quả kiểm chứng Data Warehouse | [DW_Verification_Report.md](DW_Verification_Report.md) |
+| Hướng dẫn xem tài liệu | [HUONG_DAN_DOC_TAI_LIEU.md](HUONG_DAN_DOC_TAI_LIEU.md) |
+| Hướng dẫn chạy toàn hệ thống | [HUONG_DAN_CHAY_TONG_QUAT.md](HUONG_DAN_CHAY_TONG_QUAT.md) |
+| Hướng dẫn chạy test chi tiết | [test/HUONG_DAN_CHAY_TEST.md](test/HUONG_DAN_CHAY_TEST.md) |
 
-**Video demo:** [Thư mục video demo trên Google Drive](https://drive.google.com/drive/folders/1x6fNNB01GWwsOE6fa5XxfcngMb8h902G?usp=sharing).
+Dashboard có 4 trang:
 
-**LinkGit** [Git](https://github.com/BachKhaVan/DE-MiniProject-TMDB.git)
+1. Movie Portfolio Overview
+2. Financial Drivers
+3. Companies & Countries
+4. Audience & Ratings
 
-**Báo cáo tổng hợp bản nộp:** [BaoCao_TongHop_TMDB_Nhom5.pdf](docs/reports/BaoCao_TongHop_TMDB_Nhom5.pdf), nộp kèm hai phụ lục C–D. Xem [danh mục tài liệu](docs/README.md).
+Các trang Dashboard, mốc KPI và quy tắc phân bổ được mô tả trong [powerbi_dashboard/README.md](powerbi_dashboard/README.md).
 
-## 2. Phạm vi triển khai hiện tại
+## 2. Kiến trúc chạy
 
-Số mục 3.1–3.5 trong bảng là số mục yêu cầu được bộ test sử dụng.
-
-| Phần | Đã có trong repository | Phạm vi còn cần xác minh / giới hạn |
+| Thành phần | Trách nhiệm | Tài liệu riêng |
 |---|---|---|
-| 3.1 — Mage | Full Load Movies/Credits, làm sạch và nạp `stage`; pipeline incremental dùng batch CSV | Đã nối watermark sau exporter, thêm bước tạo PK và cấu hình upsert theo ID. Loader đọc batch tĩnh, chưa lọc LSET/CET; replay/failure runtime cần bằng chứng riêng |
-| 3.2 — dbt | 6 staging views, 7 dimensions, 4 bridges, 1 fact; 3 seeds; tests, contracts và docs | Build/rebuild cần nguồn stage hợp lệ; mô tả bốn staging association models còn bị DB13 phát hiện thiếu trong lượt test đã lưu |
-| 3.3 — Data Warehouse | DDS có grain một dòng/phim, constraints, Unknown members và trọng số Bridge | Lượt integration gần nhất đã lưu đạt 43 PASS trong section 33; không suy rộng thành toàn bộ project PASS |
-| 3.4 — Power BI | PBIX, semantic model, DAX và 4 trang dashboard; SQL tham chiếu, comparator 6 KPI | Refresh, filter context, drill-down, relationships và Q1–Q8 cần bằng chứng Desktop cùng snapshot |
-| 3.5 — Generative AI | Các case AI01–AI04 ghi nhận phạm vi chưa hoàn thành | Chưa có tích hợp LLM/API hoặc runtime AI để nghiệm thu |
+| Mage.ai | Đọc CSV, làm sạch cơ bản, nạp/append dữ liệu vào schema `stage` | [mage_pipeline/README_Ingestion.md](mage_pipeline/README_Ingestion.md) |
+| PostgreSQL | Lưu `stage`, `staging`, `dds`, `control`; phục vụ dbt và Power BI | [postgres/](postgres/) |
+| dbt | Chuẩn hóa dữ liệu, tạo 7 Dimension, 4 Bridge, 1 Fact và chạy test | [dbt_transform/README.md](dbt_transform/README.md) |
+| Power BI | Trực quan hóa, semantic model và DAX | [powerbi_dashboard/README.md](powerbi_dashboard/README.md) |
+| Bộ acceptance test | Kiểm tra source, pipeline, dbt, DW, Power BI và ghi evidence | [test/HUONG_DAN_CHAY_TEST.md](test/HUONG_DAN_CHAY_TEST.md) |
 
-## 3. Kiến trúc và quy tắc dữ liệu
+**Mô hình DDS:**
 
-| Tầng | Công nghệ / schema | Trách nhiệm |
-|---|---|---|
-| Nguồn | TMDB 5000 Movie Dataset, CSV | Movies, Credits và batch demo incremental |
-| Nạp dữ liệu | Mage.ai → PostgreSQL `stage` | Đọc, làm sạch cơ bản và nạp raw staging |
-| Chuyển đổi | dbt → schema `staging` | Chuẩn hóa kiểu dữ liệu, parse quan hệ JSON |
-| Kho phân tích | dbt → PostgreSQL `dds` | Dimensions, Bridges, Fact và seeds mapping |
-| Báo cáo | Power BI Desktop | Semantic model, DAX, trực quan hóa và lọc tương tác |
-| Kiểm thử | Python/pytest + SQL + đối chiếu Desktop | Kiểm source, dữ liệu, build/rebuild, negative controls và KPI |
+- 7 Dimension: Movie, Date, Language, Genre, Company, Country, Keyword.
+- 4 Bridge: Movie-Genre, Movie-Company, Movie-Country, Movie-Keyword.
+- 1 Fact: `dds.fact_movie`, mỗi dòng tương ứng một bộ phim.
+- Dimension/Bridge/Fact được dbt tạo và quản lý vòng đời.
 
-- `fact_movie`: một dòng cho một phim; tham chiếu Movie, Date và Language.
-- Bảy dimension: Movie, Date, Language, Genre, Company, Country, Keyword.
-- Bốn bridge: Movie–Genre, Movie–Company, Movie–Country, Movie–Keyword.
-- Genre/Company/Country dùng `weight_factor = 1/k` khi phân bổ chỉ tiêu cộng được. Keyword là tagging, không có trọng số; các theme có thể chồng lấp.
-- Budget/Revenue bằng 0 được chuẩn hóa thành NULL. Profit = Revenue − Budget; ROI = Profit / Budget khi đủ điều kiện. ROI lưu dạng tỷ lệ, hiển thị Percentage.
-- Median ROI theo phim khác ROI Overall (`SUM(profit) / SUM(budget)`). Không cộng ROI hoặc cộng các nhóm Full allocation rồi coi là tổng danh mục.
-- `stage` là bảng Mage nạp; `staging` là views dbt chuẩn hóa; `dds` là lớp Power BI sử dụng.
+## 3. Bắt đầu nhanh
 
-PostgreSQL chỉ tự chạy [01_init.sql](postgres/init/01_init.sql) khi tạo volume mới. [02_dds_schema.sql](postgres/init/02_dds_schema.sql) là DDL tham chiếu; không chạy trước dbt. **dbt quản lý vòng đời bảng DDS.**
+Yêu cầu: Windows 10/11, Docker Desktop bật Linux containers, Python 3.12 và Power BI Desktop nếu xem/dashboard.
 
-## 4. Cấu trúc repository
-
-| Đường dẫn | Nội dung |
-|---|---|
-| `compose.yaml`, `.env.example` | Stack chính và mẫu cấu hình PostgreSQL |
-| `data/raw/` | CSV cục bộ; không commit dữ liệu thô |
-| `mage_pipeline/` | Loaders, transformers, exporters và hai pipeline |
-| `postgres/init/` | Khởi tạo schema/watermark và DDL tham chiếu |
-| `dbt_transform/` | Models, seeds, macros, tests, profile mẫu và tài liệu dbt |
-| `powerbi_dashboard/` | PBIX và hướng dẫn sử dụng/Refresh |
-| `docs/` | PDF dashboard, phụ lục và danh mục tài liệu bàn giao |
-| `test/acceptance/` | Runner, preflight, môi trường cô lập, scenarios, SQL và checklist |
-| `test/unit/` | Test hồi quy cho bộ kiểm thử |
-| `test/results/` | REPORT, JSON, JUnit, log và SQL evidence của các lượt đã chạy |
-| `test/validate_tmdb.py` | Script đối chiếu CSV–staging bổ trợ; không thay bộ acceptance |
-
-## 5. Khởi chạy môi trường chính để demo
-
-### 5.1. Chuẩn bị
-
-Máy cần Docker Desktop (Linux containers), Python 3.12 và Power BI Desktop nếu xem/Refresh PBIX. Mở PowerShell tại thư mục gốc repository. Các lệnh này dành cho **môi trường chính**, khác môi trường test ở phần 6.
-
-Đặt `tmdb_5000_movies.csv`, `tmdb_5000_credits.csv` trong `data/raw/`. Thêm `tmdb_new_batch.csv` nếu chạy incremental hoặc bộ kiểm thử đầy đủ. CSV phải lấy từ bộ dữ liệu của project; tên file không bảo đảm nội dung đúng snapshot.
+### Bước 1 - Chuẩn bị môi trường
 
 ```powershell
-# Chỉ tạo nếu chưa có cấu hình/môi trường cục bộ:
-if (-not (Test-Path .env)) { Copy-Item .env.example .env }
-if (-not (Test-Path .venv)) { py -3.12 -m venv .venv }
+Set-Location D:\DE-MiniProject-TMDB
+Copy-Item .env.example .env
+py -3.12 -m venv .venv
+
 $py = (Resolve-Path .\.venv\Scripts\python.exe).Path
-& $py -m pip install dbt-core==1.12.5 dbt-postgres==1.11.0
+& $py -m pip install --upgrade pip
+& $py -m pip install "dbt-core==1.12.5" "dbt-postgres==1.11.0"
 & $py -m pip install -r .\test\acceptance\requirements.txt
 ```
 
-Sửa `.env`, thay mật khẩu mẫu bằng mật khẩu riêng. Tạo `mage_pipeline/io_config.yaml` cục bộ theo cấu trúc:
+Sửa mật khẩu trong `.env`. CSV dữ liệu thô đặt vào `data/raw/`:
+
+- `tmdb_5000_movies.csv`
+- `tmdb_5000_credits.csv`
+- `tmdb_new_batch.csv` nếu chạy incremental hoặc test đầy đủ
+
+### Bước 2 - Cấu hình Mage và dbt
+
+Tạo `mage_pipeline/io_config.yaml`:
 
 ```yaml
 version: 0.1.1
@@ -104,87 +81,89 @@ default:
   POSTGRES_DBNAME: warehouse
   POSTGRES_SCHEMA: stage
   POSTGRES_USER: labuser
-  POSTGRES_PASSWORD: 'THAY_BANG_MAT_KHAU_TRONG_ENV'
+  POSTGRES_PASSWORD: "mật_khẩu_giống_ở_.env"
   POSTGRES_HOST: postgres
   POSTGRES_PORT: 5432
 ```
 
-Mage chạy trong container nên host là `postgres`; dbt/Power BI chạy trên máy host dùng `localhost`. Nếu đổi database/user trong `.env`, đồng bộ cả Mage và dbt.
+Tạo profile dbt:
 
 ```powershell
-if (-not (Test-Path .\dbt_transform\profiles.yml)) {
-    Copy-Item .\dbt_transform\profiles.yml.example .\dbt_transform\profiles.yml
-}
+Copy-Item .\dbt_transform\profiles.yml.example .\dbt_transform\profiles.yml
 ```
 
-Sửa password/host/database/user trong profile cho khớp môi trường. Không commit `.env`, `io_config.yaml`, `profiles.yml` thật hoặc `.runtime`.
+Sửa `host`, `user`, `password`, `port`, `dbname` trong profile sao cho khớp `.env`. Máy chạy dbt dùng `localhost`; Mage chạy trong Docker dùng `postgres`.
 
-### 5.2. Nạp dữ liệu và build DDS
+Không commit `.env`, `io_config.yaml`, `profiles.yml`, mật khẩu hoặc dữ liệu thô.
+
+### Bước 3 - Khởi động và nạp dữ liệu
 
 ```powershell
-docker info --format '{{.ServerVersion}}'
-docker compose config -q
 docker compose up -d
 docker compose ps
 docker compose exec postgres pg_isready -U labuser -d warehouse
 ```
 
-Đợi PostgreSQL nhận kết nối. Mở [Mage chính](http://localhost:6789), chạy toàn pipeline **`tmdb_ingestion`**, đợi thành công trước khi build:
+Mở Mage tại `http://localhost:6789`, chạy toàn pipeline `tmdb_ingestion`, đợi cả nhánh Movies và Credits thành công.
+
+Sau đó build Data Warehouse:
 
 ```powershell
 & .\.venv\Scripts\dbt.exe debug --project-dir .\dbt_transform --profiles-dir .\dbt_transform
-if ($LASTEXITCODE -ne 0) { throw 'dbt debug lỗi; kiểm tra kết nối' }
 & .\.venv\Scripts\dbt.exe build --project-dir .\dbt_transform --profiles-dir .\dbt_transform
-if ($LASTEXITCODE -ne 0) { throw 'dbt build lỗi; kiểm tra log' }
 & .\.venv\Scripts\dbt.exe docs generate --project-dir .\dbt_transform --profiles-dir .\dbt_transform
 ```
 
-Chi tiết debug, docs và mô hình: [README dbt](dbt_transform/README.md). Không chạy incremental lặp trên dữ liệu demo để thử chống trùng; thực hiện scenarios trên DB test riêng.
+`postgres/init/01_init.sql` được Docker chạy khi tạo volume mới. `postgres/init/02_dds_schema.sql` là DDL tham chiếu; không chạy trước dbt và không coi đó là thay thế cho `dbt build`.
 
-### 5.3. Mở Power BI
+### Bước 4 - Mở và Refresh Power BI
 
-Mở [PBIX](powerbi_dashboard/TMDB_Movie_Dashboard.pbix), kiểm **Data source settings** và kết nối đúng PostgreSQL, rồi **Home → Refresh**. Bốn trang gồm Overview, Financial Drivers, Companies & Countries, Audience & Ratings. Xem [README Power BI](powerbi_dashboard/README.md) để biết chỉ số và thao tác.
+Mở [powerbi_dashboard/TMDB_Movie_Dashboard.pbix](powerbi_dashboard/TMDB_Movie_Dashboard.pbix), kiểm `Data source settings`, kết nối đúng PostgreSQL và chọn `Home -> Refresh`.
 
-PBIX có thể hiển thị dữ liệu Import cũ khi PostgreSQL tắt. Mở được dashboard không chứng minh Refresh thành công. Snapshot ban đầu có 4.803 phim; số liệu đó là tham chiếu lịch sử, không thay kết quả SQL của DB đang dùng.
+PBIX có thể mở cùng dữ liệu Import đã lưu dù container đang tắt. Chỉ khi Refresh thành công mới xem đó là dữ liệu mới lấy từ PostgreSQL.
 
-## 6. Chạy kiểm thử
-
-**Hướng dẫn đầy đủ:** [HUONG_DAN_CHAY_TEST.md](test/HUONG_DAN_CHAY_TEST.md). Phần 10 hướng dẫn riêng 3.1–3.4; phần 11 là scenarios Mage; phần 12 xử lý lỗi cổng Mage; phần 13 lưu bằng chứng.
-
-| Môi trường | PostgreSQL | Mage | Cách dùng |
-|---|---|---|---|
-| Chính | `localhost:5432`, `warehouse` | `localhost:6789` | Demo, Refresh PBIX và kiểm readonly |
-| Test cô lập | `127.0.0.1:55432`, `tmdb_test_warehouse` | `127.0.0.1:16789` | Integration, rebuild và negative controls |
-
-Kiểm chỉ đọc DB chính đã có dữ liệu:
+### Bước 5 - Chạy kiểm thử
 
 ```powershell
-$py = (Resolve-Path .\.venv\Scripts\python.exe).Path
 & $py .\test\acceptance\preflight.py --mode readonly --env-file .env
 & $py .\test\acceptance\run.py --mode readonly --section all --env-file .env
 ```
 
-Với DB test, làm đủ **prepare (một lần) → up → Mage ingestion → dbt-build → runner** theo hướng dẫn, không chỉ đổi `--mode`. Cờ `--snapshot full` chỉ đúng sau Full Load và trước append. Runner không tự chạy Mage hoặc Refresh Power BI.
+Để integration, rebuild và kịch bản Mage cô lập, xem [HUONG_DAN_CHAY_TONG_QUAT.md](HUONG_DAN_CHAY_TONG_QUAT.md) hoặc [test/HUONG_DAN_CHAY_TEST.md](test/HUONG_DAN_CHAY_TEST.md).
 
-Mỗi lượt tạo thư mục `test/results/acceptance_<UTC>_<id>/`. PASS là assertion đạt trong phạm vi test; INFO chỉ là số liệu quan sát/tham chiếu; BLOCKED thiếu điều kiện/bằng chứng; SKIPPED chưa chạy theo mode; FAIL là assertion không đạt. Comparator sáu KPI không thay kiểm tra toàn bộ DAX hoặc UI.
+## 4. Phân biệt trạng thái kiểm thử
 
-### Kết quả kiểm thử đã ghi nhận
+| Trạng thái | Ý nghĩa |
+|---|---|
+| PASS | Assertion đạt trong phạm vi test |
+| FAIL | Assertion không đạt hoặc evidence không phù hợp |
+| BLOCKED | Thiếu điều kiện/runtime/evidence |
+| SKIPPED | Không chạy trong mode được chọn |
+| INFO | Quan sát hoặc số liệu tham chiếu, không phải chứng minh đạt |
 
-Lượt 3.1 `20261116T071641Z_03ce5c` đã được đọc ngày 16/11/2026: **22 PASS, 0 FAIL, 10 BLOCKED, 0 SKIPPED, 6 INFO**. MG18 kiểm dependency watermark đã PASS. Lượt 3.2 `20261116T072911Z_a683f3`: **33 PASS, 1 FAIL**; DB13 còn thiếu mô tả riêng của bốn staging association models.
+Luồng test tạo report tại `test/results/acceptance_<UTC>_<id>/`. Không tự động xem report cũ là kết quả của lần chạy hiện tại.
 
-Các kết quả này là ghi nhận từ report đã đọc, không phải lượt chạy mới khi chỉnh tài liệu. Các thư mục report hiện không còn trong `test/results/` tại thời điểm rà soát; cần lưu lại report được chọn khi nộp, không dẫn liên kết tới file đã xóa. Không dùng FAIL MG18 của lượt cũ để mô tả code hiện tại.
+## 5. Cấu trúc thư mục
 
-Phần Power BI được nhóm xác nhận đã kiểm tra thủ công trong video; xem thư mục video ở mục 1; ghi mốc thời gian tương ứng khi đối chiếu từng case. Trạng thái BLOCKED của runner chỉ phản ánh chưa có adapter/bằng chứng tự động cho từng case, không thay kết luận kiểm thủ công. Không sửa report cũ thành PASS.
+| Thư mục | Nội dung |
+|---|---|
+| `mage_pipeline/` | Loaders, transformers, exporters và pipeline Mage |
+| `dbt_transform/` | Models, seeds, macros, tests, profile mẫu |
+| `postgres/init/` | SQL khởi tạo và DDL tham chiếu |
+| `postgres/verify_dds_dw.sql` | SQL kiểm chứng kho dữ liệu |
+| `powerbi_dashboard/` | PBIX và hướng dẫn Refresh |
+| `docs/` | PDF dashboard, báo cáo và phụ lục |
+| `test/acceptance/` | Runner, môi trường cô lập, scenario và checklist |
+| `test/unit/` | Test hồi quy cho harness |
+| `test/results/` | Evidence của các lượt test được lưu |
+| `data/raw/` | CSV nguồn cục bộ; không commit |
 
-## 7. Giới hạn cần trình bày trong báo cáo
+## 6. Giới hạn cần trình bày
 
-- Incremental đã có bước tạo PK, cấu hình upsert và graph cập nhật watermark sau exporter. Loader vẫn đọc batch tĩnh, chưa lọc LSET/CET; khả năng replay/failure cần đánh giá theo kịch bản thực đã chạy. Xem [README Mage](mage_pipeline/README_Ingestion.md).
-- Một số surrogate keys sinh theo thứ tự natural key; thêm natural key mới có thể làm SK đổi khi rebuild. Dùng NK khi đối chiếu giữa các snapshot.
-- Country/Keyword/Language mappings có fallback, chưa bao phủ mọi trường hợp. Dataset là snapshot; năm phát hành không phải năm ghi nhận doanh thu.
-- Kiểm thử Power BI cần cùng nguồn, snapshot và bộ lọc. Refresh và tương tác phải có bằng chứng thật.
-- Generative AI chưa triển khai; không mô tả hạng mục này là đã hoàn thành.
+- Generative AI 3.5 **chưa triển khai** và không được trình bày là đã hoàn thành.
+- Incremental hiện mô phỏng batch CSV, có upsert theo `id` và cập nhật watermark sau exporter; loader chưa lọc bản ghi theo LSET/CET.
+- PBIX có thể chứa snapshot Import cũ; Refresh, tương tác và kết quả DAX cần evidence trên cùng nguồn/snapshot/filter.
+- Một số mapping country/keyword/language có fallback; dữ liệu TMDB là snapshot nên năm phát hành không nhất thiết là năm ghi nhận doanh thu.
+- Không chạy `docker compose down -v` để khắc phục lỗi thông thường vì lệnh này có thể xóa toàn bộ volume PostgreSQL.
 
-
-Không dùng `docker compose down -v` để sửa lỗi kết nối. `isolation.py down` cũng xóa volume **test**; muốn giữ dữ liệu để tiếp tục demo/test thì chỉ dừng container.
-
-Nhóm tích hợp qua `develop`, làm việc trên `feat/<phạm-vi>-<tên>` và mở pull request theo quy ước nhóm. Việc chỉnh tài liệu không tự thực hiện commit/push hoặc thay đổi dữ liệu.
+Video demo chính thức được nhóm lưu tại [Google Drive](https://drive.google.com/drive/folders/1x6fNNB01GWwsOE6fa5XxfcngMb8h902G?usp=sharing).

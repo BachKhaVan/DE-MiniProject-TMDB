@@ -9,6 +9,7 @@
 | Phụ lục D | [Kiểm chứng PostgreSQL–Power BI](reports/Phu_luc_D_Kiem_chung_PostgreSQL_PowerBI.pdf) | Bằng chứng đối chiếu đã biên soạn |
 | Data Contract | [Schema_Report.md](../Schema_Report.md) | Thiết kế mô hình |
 | Kiểm chứng DW | [DW_Verification_Report.md](../DW_Verification_Report.md) | Kết quả đã ghi nhận, cần đọc đúng snapshot |
+| Hướng dẫn chạy tổng | [HUONG_DAN_CHAY_TONG_QUAT.md](../HUONG_DAN_CHAY_TONG_QUAT.md) | Thứ tự chạy Docker, Mage, dbt, Power BI và test |
 | Hướng dẫn test | [HUONG_DAN_CHAY_TEST.md](../test/HUONG_DAN_CHAY_TEST.md) | Quy trình tái chạy và lưu bằng chứng |
 | Kịch bản video | [VIDEO_DEMO.md](../test/acceptance/VIDEO_DEMO.md) | Nội dung quay demo |
 

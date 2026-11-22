@@ -41,6 +41,7 @@ Tài liệu này giúp giảng viên xác định thứ tự xem sản phẩm, v
 | File | Vai trò |
 |---|---|
 | [README.md](README.md) | Tổng quan project, sản phẩm bàn giao, cài đặt và trạng thái triển khai |
+| [HUONG_DAN_CHAY_TONG_QUAT.md](HUONG_DAN_CHAY_TONG_QUAT.md) | Một lộ trình duy nhất từ Docker/Mage đến dbt, Power BI và test |
 | [Schema_Report.md](Schema_Report.md) | Data Contract: grain, Dimension/Fact/Bridge, khóa, Unknown và quy tắc tính toán |
 | [DW_Verification_Report.md](DW_Verification_Report.md) | Kết quả kiểm chứng kho dữ liệu và số liệu tham chiếu của phiên được ghi nhận |
 | [compose.yaml](compose.yaml) | Cấu hình khởi động Mage và PostgreSQL bằng Docker Compose |
@@ -58,7 +59,7 @@ Số mục dưới đây là số mục trong đề bài, không phải số ch�
 | **3.2 — Data Transformation** | `dbt_transform/`; báo cáo mục 2.3; log build/rebuild, dbt tests và lineage |
 | **3.3 — Data Warehouse** | `Schema_Report.md`, `postgres/`, `DW_Verification_Report.md`; báo cáo mục 2.1, 2.4 và 3.2 |
 | **3.4 — Power BI** | `powerbi_dashboard/`; báo cáo mục 2.5, 3.3–3.6; phụ lục C–D và video tương tác |
-| **3.5 — Generative AI** | Báo cáo mục 2.6 và phần kết luận: **chưa triển khai**, được ghi rõ trong phạm vi hoàn thành |
+| **3.5 — Generative AI** | Báo cáo mục 2.6 và 3.7.2  |
 
 Incremental hiện mô phỏng batch CSV, có bước tạo khóa chính, cấu hình upsert theo ID và dependency cập nhật watermark sau exporter. Loader chưa lọc dữ liệu theo LSET/CET. Phạm vi kiểm chứng replay/phục hồi được xác định theo bằng chứng từng kịch bản.
 
